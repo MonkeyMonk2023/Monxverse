@@ -1,13 +1,72 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800&family=Play:wght@700&display=swap"); */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: #f1f1f1;
+  }
+  h1 {
+    @apply text-xl font-medium capitalize;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.link {
+  @apply p-2.5 flex rounded-md gap-6 items-center md:cursor-pointer cursor-default duration-300 font-medium;
+}
+
+.active {
+  @apply bg-blue-100 text-yellow-400;
+}
+
+
+
+@layer base {
+  h1 {
+     @apply text-3xl text-gray-800 font-semibold;
+  }
+  h2 {
+     @apply text-2xl text-gray-800 font-semibold;
+  }
+  h3 {
+     @apply text-xl text-gray-800 font-semibold;
+  }
+  h4 {
+     @apply text-lg text-gray-800 font-semibold;
+  }
+  h5 {
+     @apply text-base text-gray-800 font-semibold;
+  }
+  h6 {
+     @apply text-sm text-gray-800 font-semibold;
+  }
+  body {
+     @apply text-base bg-gray-100 text-gray-600 font-normal antialiased;
+  }
+
+  input::placeholder {
+     @apply text-base text-gray-600;
+  }
+}
+
+/* btn, card */
+
+@layer components {
+  .btn {
+     @apply bg-transparent border border-transparent rounded-md text-white cursor-pointer inline-block text-base font-semibold py-2 px-4 text-center transition align-middle select-none;
+  }
+  .btn-sm {
+     @apply py-1 px-2 text-sm rounded-md;
+  }
+  .btn-lg {
+     @apply py-2 px-4 text-lg rounded-lg;
+  }
+  .card {
+     @apply bg-white relative flex flex-col min-w-0 break-words rounded-md;
+  }
+  .card-body {
+     @apply flex-auto p-5;
+  }
 }
