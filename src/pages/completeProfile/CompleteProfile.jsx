@@ -1,0 +1,582 @@
+import React, { useEffect, useState } from "react";
+import { updateProfile } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, storage } from "../../firebase/Firebase";
+import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
+
+import {
+  doc,
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
+import { UserAuth } from "../../context/authContext";
+import { useNavigate } from "react-router-dom";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
+
+const CompleteProfile = () => {
+  console.log(auth.PhoneAuthProvider);
+  const defaultProfileImage =
+    "https://firebasestorage.googleapis.com/v0/b/monkeymonk-8d654.appspot.com/o/profileImages%2Fdefault_user.jpg?alt=media&token=fd3200cf-e81e-4b27-8528-7307df8d99ab";
+
+  const navigate = useNavigate();
+  const { user } = UserAuth();
+  const currentUser = user;
+
+  const [profileData, setProfileData] = useState({
+    username: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    bio: "",
+    gender: "",
+    DOB: "",
+    facebookProfile: "",
+    instagramProfile: "",
+    twitterProfile: "",
+    password: "",
+    email: "",
+    photoURL: defaultProfileImage,
+    isProfileComplete: false,
+    showPhoneNumber:true
+  });
+
+  const [userData, setUserData] = useState(null);
+
+  const fetchUserData = async () => {
+    try {
+      const userQuery = query(
+        collection(db, "users"),
+        where("userId", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs.map((doc) => doc.data());
+        setUserData(userData[0]);
+        setProfileData(userData[0]);
+      } else {
+        console.log("No matching documents found.");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error.message);
+    }
+  };
+
+  const handleProfileChange = async (e) => {
+    const { name, value } = e.target;
+    console.log(name, value, "name val");
+    let newValue = value;
+
+    const checkUsernameExists = async (username) => {
+      try {
+        const usersRef = collection(db, "users");
+        const userQuery = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(userQuery);
+        return !querySnapshot.empty;
+      } catch (error) {
+        console.error("Error checking username existence:", error.message);
+        return false;
+      }
+    };
+
+    if (name === "username") {
+      newValue = value.replace(/[^a-z0-9_]/g, "");
+      setErrors({
+        ...errors,
+        username: "",
+      });
+
+      const usernameExists = await checkUsernameExists(newValue);
+      if (usernameExists) {
+        setErrors({
+          ...errors,
+          username: "User with this name already exists",
+        });
+        return;
+      }
+    }
+
+    setProfileData({ ...profileData, [name]: newValue });
+  };
+
+  const [errors, setErrors] = useState({
+    username: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    bio: "",
+    gender: "",
+    DOB: "",
+  });
+
+  const submitUserProfile = async (e) => {
+    e.preventDefault();
+
+    const newErrors = {};
+    Object.keys(profileData).forEach((key) => {
+      if (
+        !profileData[key] &&
+        key !== "photoURL" &&
+        key !== "isProfileComplete" &&
+        key !== "showPhoneNumber" &&
+        key !== "email" &&
+        key !== "password" &&
+        key !== "instagramProfile" &&
+        key !== "facebookProfile" &&
+        key !== "twitterProfile"
+      ) {
+        newErrors[key] = `${
+          key.charAt(0).toUpperCase() + key.slice(1)
+        } is required`;
+      }
+    });
+    setErrors(newErrors);
+
+    // If there are errors, stop submission
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
+    try {
+      await fetchUserData();
+      const profileImage = e.target.elements.profileImage.files[0];
+
+      let imageUrl = defaultProfileImage;
+
+      if (profileImage) {
+        const storageRef = ref(
+          storage,
+          `profileImages/${currentUser.uid}/${profileImage.name}`
+        );
+        await uploadBytes(storageRef, profileImage);
+        imageUrl = await getDownloadURL(storageRef);
+      }
+
+      console.log(userData, "userData");
+
+      const updatedUserData = {
+        ...userData,
+        username: profileData.username,
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        phoneNumber: profileData.phoneNumber,
+        gender: profileData.gender,
+        bio: profileData.bio,
+        DOB: profileData.DOB,
+        facebookProfile: profileData.facebookProfile,
+        twitterProfile: profileData.twitterProfile,
+        instagramProfile: profileData.instagramProfile,
+        photoURL: imageUrl,
+        isProfileComplete: true,
+        showPhoneNumber:true
+      };
+
+      const userDocRef = doc(db, "users", currentUser.uid);
+      await updateDoc(userDocRef, updatedUserData);
+      alert("User data updated successfully.");
+      setProfileData({});
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error updating profile data:", error.message);
+    }
+  };
+
+  const handleProfileImageChange = (e) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    setProfileData((prevProfileData) => ({
+      ...prevProfileData,
+      [name]: value,
+      photoURL:
+        name === "profileImage"
+          ? URL.createObjectURL(e.target.files[0])
+          : prevProfileData.photoURL,
+    }));
+  };
+
+  const handlePhoneChange = (value) => {
+    setProfileData((prevProfileData) => ({
+      ...prevProfileData,
+      phoneNumber: value,
+    }));
+    console.log(value);
+  };
+
+  const [completeUserData, setCompleteUserData] = useState();
+
+  useEffect(() => {
+    const fetchCompleteUserDetails = async () => {
+      if (!currentUser?.uid) return;
+      const userDocRef = doc(db, "users", currentUser.uid);
+      try {
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const user = userDocSnap.data();
+          setCompleteUserData(user);
+          if (user?.isProfileComplete) {
+            console.log(currentUser.emailVerified);
+            if(currentUser.emailVerified){
+              navigate("/dashboard");
+            }
+            else{
+              navigate("/verifyUser") 
+            }
+          }
+        } else {
+          console.log("User document does not exist.");
+        }
+      } catch (error) {
+        console.error("Error fetching user document:", error);
+        alert("Error in fetching details");
+      }
+    };
+
+    fetchCompleteUserDetails();
+  }, [currentUser]);
+
+  const [otp, setOtp] = useState("");
+  const [verificationId, setVerificationId] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const handleSendOTP = async () => {
+    try {
+      setLoading(true);
+      const appVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+      });
+      const verificationResult = await signInWithPhoneNumber(
+        auth,
+        profileData.phoneNumber,
+        appVerifier
+      );
+      setVerificationId(verificationResult.verificationId);
+      setLoading(false);
+      console.log("OTP sent successfully!");
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
+    }
+  };
+
+  // const handleVerifyOTP = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const credential = auth.PhoneAuthProvider.credential(verificationId, otp);
+  //     console.log(verificationId,"first");
+  //     await auth.currentUser.updatePhoneNumber(credential);
+  //     console.log(verificationId,"second");
+  //     setLoading(false);
+  //     console.log("Phone number added to profile:", profileData.phoneNumber);
+  //   } catch (error) {
+  //     setLoading(false);
+  //     setError(error.message);
+  //   }
+  // };
+
+  const handleVerifyOTP = async ( ) => {
+    try {
+      const confirmationResult = await auth.currentUser.confirmationResult(verificationId);
+      await confirmationResult.confirm(otp);
+      console.log("Phone number added to profile:", profileData.phoneNumber);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
+      <div className=" max-w-screen-xl m-0 md:m-16 bg-white shadow sm:rounded-lg flex justify-center flex-1">
+        <div className="w-0 lg:w-10 xl:w-15 p-6 sm:p-12 bg-amber-100"></div>
+
+        <form
+          onSubmit={submitUserProfile}
+          className="lg:w-full w-full p-3 md:p-8 flex lg:flex-row flex-col "
+        >
+         
+          <div className="col-1 lg:w-1/2 w-full p-6 space-y-4">
+          <div className="text-xl font-semibold">
+            Step 2: Complete your Profile
+          </div>
+            <div className=" ">
+              <div className="  flex justify-center mb-5">
+                {profileData.photoURL ? (
+                  <div className="h-24 w-24 md:h-32 md:w-32 bg-gray-300 rounded-full ">
+                    <img
+                      src={profileData.photoURL}
+                      alt="Profile"
+                      className="h-24 w-24 md:h-32 md:w-32 rounded-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-24 w-24 md:h-32 md:w-32 bg-gray-300 rounded-full flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-gray-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              <div className=" p-1 rounded-full left-36 flex justify-center items-center">
+                <label
+                  htmlFor="profileImage"
+                  className="cursor-pointer bg-blue-400 p-2 px-4 font-semibold text-white rounded-2xl"
+                >
+                  Edit Photo
+                </label>
+                <input
+                  type="file"
+                  id="profileImage"
+                  className="hidden"
+                  accept="image/*"
+                  name="profileImage"
+                  onChange={handleProfileImageChange}
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                htmlFor="username"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={profileData.username}
+                onChange={handleProfileChange}
+                placeholder="Enter your username"
+                className="mt-0 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              />
+              {errors.username && (
+                <p className="text-red-500 text-sm">{errors.username}</p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="firstName"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                First Name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={profileData.firstName}
+                onChange={handleProfileChange}
+                placeholder="Enter your first name"
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              />
+              {errors.firstName && (
+                <p className="text-red-500 text-sm">{errors.firstName}</p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="lastName"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Last Name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={profileData.lastName}
+                onChange={handleProfileChange}
+                placeholder="Enter your last name"
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              />
+              {errors.lastName && (
+                <p className="text-red-500 text-sm">{errors.lastName}</p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="mobileNumber"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Mobile Number*
+              </label>
+              <div className="w-full my-4 sm:my-0">
+                <PhoneInput
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Enter your mobile number"
+                  value={profileData.phoneNumber}
+                  defaultCountry="IN"
+                  onChange={handlePhoneChange}
+                />
+              </div>
+              {errors.phoneNumber && (
+                <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+              )}
+              <button
+                type="button"
+                className="mt-4 bg-blue-500 text-white p-2 rounded"
+                onClick={handleSendOTP}
+                disabled={loading}
+              >
+                {loading ? <div className="animate-spin" /> : "Send OTP"}
+              </button>
+            </div>
+            <div>
+              <div id="recaptcha-container"></div>
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={handleVerifyOTP}
+                disabled={loading}
+              >
+                {loading ? <div className="animate-spin" /> : "Verify OTP"}
+              </button>
+            </div>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+
+            <div>
+              <label
+                htmlFor="bio"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Bio
+              </label>
+              <textarea
+                name="bio"
+                value={profileData.bio}
+                onChange={handleProfileChange}
+                placeholder="Tell us about yourself"
+                rows={4}
+                maxLength={200}
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              ></textarea>
+              {errors.bio && (
+                <p className="text-red-500 text-sm">{errors.bio}</p>
+              )}
+            </div>
+          </div>
+          <div className="col-2 lg:w-1/2 w-full p-6 lg:mt-64 lg:relative space-y-4">
+            <div>
+              <label
+                htmlFor="gender"
+                className=" text-sm font-medium text-gray-500"
+              >
+                Gender
+              </label>
+              <select
+                name="gender"
+                value={profileData.gender}
+                onChange={handleProfileChange}
+                className=" w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              {errors.gender && (
+                <p className="text-red-500 text-sm">{errors.gender}</p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="DOB"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                name="DOB"
+                value={profileData.DOB}
+                onChange={handleProfileChange}
+                placeholder="Enter your date of birth"
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                max={new Date().toISOString().split("T")[0]}
+              />
+              {errors.DOB && (
+                <p className="text-red-500 text-sm">{errors.DOB}</p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="facebook"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Facebook (optional)
+              </label>
+              <input
+                type="text"
+                name="facebookProfile"
+                value={profileData.facebookProfile}
+                onChange={handleProfileChange}
+                placeholder="Enter your Facebook profile URL"
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="instagram"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Instagram (optional)
+              </label>
+              <input
+                type="text"
+                name="instagramProfile"
+                value={profileData.instagramProfile}
+                onChange={handleProfileChange}
+                placeholder="Enter your Instagram profile URL"
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="twitter"
+                className=" text-sm font-medium text-gray-500"
+              >
+                Twitter (optional)
+              </label>
+              <input
+                type="text"
+                name="twitterProfile"
+                value={profileData.twitterProfile}
+                onChange={handleProfileChange}
+                placeholder="Enter your Twitter profile URL"
+                className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              />
+            </div>
+            <div className="lg:absolute lg:bottom-0 lg:right-6">
+              <button
+                type="submit"
+                className="mt-8 bg-blue-500 text-white py-4 px-8 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CompleteProfile;

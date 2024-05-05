@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { auth } from "../../firebase/Firebase";
 import { FcGoogle } from "react-icons/fc";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import logo from "../../assets/logo.png";
+
+import gsap from "gsap";
+// import TextPlugin from "gsap/TextPlugin";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,6 +21,10 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // State for the email address for password reset
+  const [resetEmail, setResetEmail] = useState("asmashaheen.shah@gmail.com");
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
   const validateForm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,7 +46,7 @@ const Login = () => {
       const user = result.user;
       console.log(user);
       console.log("User signed in with Google successfully!");
-      navigate("/checkuser");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error signing in with Google:", error.message);
     }
@@ -51,45 +65,109 @@ const Login = () => {
         const user = userCredential.user;
         console.log(user);
         if (user) {
-          navigate("/dashboard");
-          console.log("login success");
+          navigate("/completeProfile");
         }
         setErrors({});
       }
     } catch (error) {
-      console.error("Error logging in user:", error.message);
-      setErrors({});
+      console.error("Error logging in user:", error.code, error.message);
+      if (
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password"
+      ) {
+        setErrors({ authError: "Incorrect username or password." });
+      } else {
+        setErrors({ authError: "An error occurred. Please try again later." });
+      }
+      setEmail("");
+      setPassword("");
     }
     setLoading(false);
   };
+
+  const handleResetPassword = async () => {
+    setResetEmailSent(false)
+    if(email){
+      try {
+        await sendPasswordResetEmail(auth, email);
+        setResetEmailSent(true);
+      } catch (error) {
+        console.error("Error sending reset password email:", error.message);
+      }
+    }
+    else{
+      console.log("enter email");
+    }
+    
+  };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const textRef = useRef(null);
+
+  const sentences = [
+    "To Travel is to Live !",
+    "Travel is the Best education. You learn about Culture, History and yourself.",
+    "Travel allows you to escape ordinary and embrace the extraordinary.",
+    "Travel Opens your Heart, Broadens your mind, and fills your life with stories to tell.",
+    "Travel is the only thing which you can spend that makes you richer.!",
+  ];
+  let currentSentenceIndex = 0;
+  let currentLetterIndex = 0;
+  let intervalId;
+
+  // useLayoutEffect(() => {
+  //   gsap.registerPlugin(TextPlugin);
+
+    // const animateText = () => {
+    //   intervalId = setInterval(() => {
+    //     const currentSentence = sentences[currentSentenceIndex];
+    //     const currentText = currentSentence.slice(0, currentLetterIndex);
+    //     gsap.to(textRef.current, {
+    //       duration: 0.05,
+    //       text: currentText,
+    //       ease: "power1.in",
+    //     });
+
+    //     currentLetterIndex++;
+
+    //     if (currentLetterIndex > currentSentence.length) {
+    //       clearInterval(intervalId);
+    //       currentLetterIndex = 0;
+    //       currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
+    //       setTimeout(animateText, 2000); // Delay before starting the next sentence
+    //     }
+    //   }, 70);
+    // };
+
+    // animateText();
+
+  //   return () => clearInterval(intervalId); // Cleanup
+  // }, []);
 
   return (
     <>
       <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
         <div className="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1">
-          <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
-            <div>
-              <h2>MonkeyMonk</h2>
+          <div className=" w-full lg:w-1/2 p-6 sm:p-12">
+            <div className="text-center w-full flex justify-center items-center">
+              <div className="w-16 h-16 bg-slate-800 rounded-full mx-4 p-2">
+                <img src={logo} alt="logo" className="" />
+              </div>              
             </div>
+            
             <div className="mt-12 flex flex-col items-center">
-              <h1 className="text-2xl xl:text-3xl font-extrabold">Login</h1>
+              <h1 className="text-2xl xl:text-3xl font-bold">Login for MonkeyMonk</h1>
+              {errors.authError && (
+                <span className="ml-2 text-red-500">{errors.authError}</span>
+              )}
               <div className="w-full flex-1 mt-8">
-                <div className="flex flex-col items-center">
-                  <button onClick={signInWithGoogle} className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-primary-200 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
-                    <div className="bg-white p-2 rounded-full">
-                      <FcGoogle />
-                    </div>
-                    <span className="ml-4">Sign in with Google</span>
-                  </button>
-                </div>
-
-                <div className="my-12 border-b text-center">
-                  <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-                    Or sign in with e-mail
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="mx-auto max-w-xs">
+                <form onSubmit={handleSubmit} className="mx-auto">
+                {resetEmailSent && <span className="ml-2 text-blue-500 font-semibold">Password reset link has been shared to your email</span>}
                   <input
                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                     type="email"
@@ -97,21 +175,52 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  {errors.email && <span className="text-red-500">{errors.email}</span>}
-                  <input
-                    className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                    type="password"
-                    placeholder="Enter Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {errors.password && <span className="text-red-500">{errors.password}</span>}
+                  {errors.email && (
+                    <span className="text-red-500">{errors.email}</span>
+                  )}
+                  <div className="relative">
+                    <input
+                      className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <div
+                      className="absolute top-0 right-0 mt-10 mr-4 cursor-pointer"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? <IoEye /> : <IoEyeOff />}
+                    </div>
+                  </div>
+                  {errors.password && (
+                    <span className="text-red-500">{errors.password}</span>
+                  )}
                   <button
                     type="submit"
                     className="mt-5 tracking-wide font-semibold bg-primary-400 text-gray-100 w-full py-4 rounded-lg hover:bg-primary-500 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
                   >
                     {loading ? (
-                      <span className="loading loading-spinner loading-sm"></span>
+                      <svg
+                        className="animate-spin h-5 w-5 mr-3 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 4.418 3.582 8 8 8v-4zm14-8a7.962 7.962 0 01-2 5.291V20c4.418 0 8-3.582 8-8h-4zM12 4c-2.209 0-4 1.791-4 4h4V4z"
+                        ></path>
+                      </svg>
                     ) : (
                       <>
                         <svg
@@ -130,13 +239,38 @@ const Login = () => {
                       </>
                     )}
                   </button>
+                  <div>
+                    <p className="hover:underline cursor-pointer mt-2" onClick={handleResetPassword}>
+                      forgot password?
+                    </p>
+                  </div>
                 </form>
+
+                <div className="my-12 border-b text-center">
+                  <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
+                    Or sign in with Google
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center">
+                  <button
+                    onClick={signInWithGoogle}
+                    className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-primary-200 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+                  >
+                    <div className="bg-white p-2 rounded-full">
+                      <FcGoogle />
+                    </div>
+                    <span className="ml-4">Sign in with Google</span>
+                  </button>
+                </div>
+
                 <div className="my-12  text-center">
                   <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                     Don't have an account?
                     <Link
                       to="/register"
-                      className=" underline cursor-pointer text-primary-400 ml-2">
+                      className=" underline cursor-pointer text-primary-400 ml-2"
+                    >
                       Sign Up
                     </Link>
                   </div>
@@ -145,7 +279,12 @@ const Login = () => {
             </div>
           </div>
           <div className="flex-1 bg-primary-200 text-center hidden lg:flex">
-            <div className="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat bg-black"></div>
+          <div className="auth-bg w-full h-screen flex justify-center items-center px-4 text-center">
+            <h3
+              className="text-xl md:text-4xl font-bold text-white"
+              ref={textRef}
+            > </h3>
+          </div>
           </div>
         </div>
       </div>

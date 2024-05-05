@@ -5,8 +5,8 @@ import { UserAuth } from "../../context/authContext";
 // import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
-  // doc,
-  // setDoc,
+  doc,
+  getDoc,
   addDoc,
   collection,
   getDocs,
@@ -19,6 +19,8 @@ import map from "../../assets/map.png";
 function PostTripForm({ closeModal }) {
   const { user } = UserAuth();
   const currentUser = user;
+  console.log(user);
+
 
   const [selectedSourceId, setSelectedSourceId] = useState(null);
   const [selectedDestinationId, setSelectedDestinationId] = useState(null);
@@ -26,7 +28,7 @@ function PostTripForm({ closeModal }) {
   const [selectedTripDestination, setSelectedTripDestination] = useState(null);
   const [selectedTripSource, setSelectedTripSource] = useState(null);
   const [tripDescription, setTripDescription] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState();
   const [estimatedDays, setEstimatedDays] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
@@ -38,15 +40,50 @@ function PostTripForm({ closeModal }) {
   const destinationInputRef = useRef(null);
   const sourceInputRef = useRef(null);
 
+
+  const [completeUserData , setCompleteUserData] = useState();
+
+  useEffect(() => {
+    const fetchCompleteUserDetails = async () => {
+      const userDocRef = doc(db, "users", currentUser.uid);
+      try {
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const user = userDocSnap.data();
+          setCompleteUserData(user);
+          console.log("User data:", user);
+        } else {
+          console.log("User document does not exist.");
+        }
+      } catch (error) {
+        console.error("Error fetching user document:", error);
+      }
+    };
+    fetchCompleteUserDetails();
+  }, []);
+
+  const [errors, setErrors] = useState({
+    selectedTripSource: "",
+    selectedTripDestination: "",
+    startDate: "",
+    estimatedDays: "",
+    tripDescription: "",
+    tags: "",
+  });
+
   const handlePlaceChanged = (field) => {
-    const place = field === "source" ? sourceAutoCompleteRef.current.getPlace() : destinationAutoCompleteRef.current.getPlace()
+    const place =
+      field === "source"
+        ? sourceAutoCompleteRef.current.getPlace()
+        : destinationAutoCompleteRef.current.getPlace();
     if (place) {
       if (field === "destination") {
-        console.log("destination",place.name)
+        console.log("destination", place.name);
         setSelectedDestinationId(place.place_id);
         setSelectedTripDestination(place.name);
       } else if (field === "source") {
-        console.log("source",place.name)
+        console.log("source", place.name);
         setSelectedSourceId(place.place_id);
         setSelectedTripSource(place.name);
       }
@@ -133,10 +170,11 @@ function PostTripForm({ closeModal }) {
       sessionToken: new window.google.maps.places.AutocompleteSessionToken(),
     };
 
-    destinationAutoCompleteRef.current = new window.google.maps.places.Autocomplete(
-      destinationInputRef.current,
-      options
-    );
+    destinationAutoCompleteRef.current =
+      new window.google.maps.places.Autocomplete(
+        destinationInputRef.current,
+        options
+      );
     destinationAutoCompleteRef.current.addListener("place_changed", () =>
       handlePlaceChanged("destination")
     );
@@ -152,13 +190,44 @@ function PostTripForm({ closeModal }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [date, setDate] = useState(new Date());
-  const [trips, setTrips] = useState([]);
   const [tripDesc, setTripDesc] = useState("");
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const currentErrors = {};
+
+    if (!selectedTripSource) {
+      currentErrors.selectedTripSource = "Please select a source.";
+    }
+    if (!selectedTripDestination) {
+      currentErrors.selectedTripDestination = "Please select a destination.";
+    }
+    if (!startDate) {
+      currentErrors.startDate = "Please select a start date.";
+    }
+    if (!estimatedDays) {
+      currentErrors.estimatedDays = "Please enter estimated days.";
+    } else if (isNaN(estimatedDays) || estimatedDays <= 0) {
+      currentErrors.estimatedDays =
+        "Estimated days must be a number greater or equal to 1";
+    }
+    if (!tripDescription.trim()) {
+      currentErrors.tripDescription = "Please enter a trip description.";
+    }
+    if (tags.length === 0) {
+      currentErrors.tags = "Please enter at least one tag.";
+    }
+
+    // Check if errors exist
+    if (Object.keys(currentErrors).length > 0) {
+      setErrors(currentErrors);
+      console.error("Errors in form:", errors);
+      return;
+    }
+
     try {
+      setErrors({});
       const tripData = {
         from: selectedTripSource,
         to: selectedTripDestination,
@@ -168,9 +237,11 @@ function PostTripForm({ closeModal }) {
         tags: tags,
         timestamp: Timestamp.now(),
         estimatedDays: estimatedDays,
+        username:completeUserData.username
       };
       await addDoc(collection(db, "trips"), tripData);
       alert("Trip details added successfully!");
+      window.location.reload();
       setFrom("");
       setTo("");
       setDate(new Date());
@@ -184,27 +255,13 @@ function PostTripForm({ closeModal }) {
     }
   };
 
-  useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "trips"));
-        const tripsData = [];
-        querySnapshot.forEach((doc) => {
-          tripsData.push({ id: doc.id, ...doc.data() });
-        });
-        setTrips(tripsData);
-      } catch (error) {
-        console.error("Error fetching trips: ", error);
-      }
-    };
-    fetchTrips();
-  }, [trips]);
 
   useEffect(() => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
     setMinDate(formattedDate);
   }, []);
+  
 
   function handleCancel() {
     closeModal();
@@ -220,16 +277,15 @@ function PostTripForm({ closeModal }) {
   return (
     <div
       id="modal-bg"
-      className="absolute z-50 top-0 left-0 w-screen bg-zinc-700/50 flex flex-col justify-center items-center py-4 sm:py-0 min-h-screen"
+      className="absolute  z-50 top-0 left-0 w-screen bg-zinc-700/50 flex flex-col justify-center items-center py-4 sm:py-0 min-h-screen"
       onClick={closeModalBgClick}
     >
-      <div className=" max-w-screen-md flex flex-col relative shadow-2xl rounded-3xl sm:p-10 bg-white">
-
+      <div className="overflow-x-none max-w-screen-md flex flex-col relative shadow-2xl rounded-3xl sm:p-5 bg-white">
         <div>
           <div className=" flex flex-col justify-center ">
             <div className="p-2">
               <div className="relative px-4 md:mx-0 ">
-                <div className="max-w-md mx-auto">
+                <div className="max-w-md  lg:max-w-lg  mx-auto">
                   <div className="flex items-center space-x-5">
                     <div className="h-14 w-14 rounded-full flex flex-shrink-0 justify-center items-center">
                       <img src={map} alt="map" />
@@ -267,6 +323,11 @@ function PostTripForm({ closeModal }) {
                               <FontAwesomeIcon icon={faSearch} />
                             </div>
                           )}
+                          {errors.selectedTripSource && (
+                            <span className="text-red-500">
+                              {errors.selectedTripSource}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="w-full sm:py-2">
@@ -292,6 +353,11 @@ function PostTripForm({ closeModal }) {
                             </div>
                           )}
                         </div>
+                        {errors.selectedTripDestination && (
+                          <span className="text-red-500">
+                            {errors.selectedTripDestination}
+                          </span>
+                        )}
                       </div>
                       <div className="sm:flex sm:flex-row gap-4">
                         <div className="w-full sm:py-2 sm:w-1/2">
@@ -307,6 +373,11 @@ function PostTripForm({ closeModal }) {
                               className="flex-grow text-black dark-app:text-white relative w-full cursor-pointer rounded-xl border bg-white py-4 pl-6 leading-tight dark-app:bg-[#444444] pr-4 border-neutral-300 dark-app:border-transparent text-left transition-all focus:outline-none focus:transition-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-200"
                             />
                           </div>
+                          {errors.startDate && (
+                            <span className="text-red-500">
+                              {errors.startDate}
+                            </span>
+                          )}
                         </div>
                         <div className="w-full sm:py-2 sm:w-1/2">
                           <label htmlFor="destination">Estimated Days:</label>
@@ -323,6 +394,11 @@ function PostTripForm({ closeModal }) {
                               className="flex-grow text-black dark-app:text-white relative w-full cursor-pointer rounded-xl border bg-white py-4 pl-6 leading-tight dark-app:bg-[#444444] pr-4 border-neutral-300 dark-app:border-transparent text-left transition-all focus:outline-none focus:transition-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-200"
                             />
                           </div>
+                          {errors.estimatedDays && (
+                            <span className="text-red-500">
+                              {errors.estimatedDays}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="w-full sm:py-2">
@@ -337,6 +413,11 @@ function PostTripForm({ closeModal }) {
                             rows="4"
                           />
                         </div>
+                        {errors.tripDescription && (
+                          <span className="text-red-500">
+                            {errors.tripDescription}
+                          </span>
+                        )}
                       </div>
                       <div className="w-full sm:py-2">
                         <label htmlFor="tags">Tags:</label>
@@ -373,16 +454,23 @@ function PostTripForm({ closeModal }) {
                               </div>
                             ))}
                         </div>
+                        {errors.tags && (
+                          <span className="text-red-500">{errors.tags}</span>
+                        )}
                       </div>
                     </div>
                     <div className="pt-4 flex items-center space-x-4">
-                      <button className="flex justify-center items-center w-full text-gray-900 px-4 py-3 rounded-md focus:outline-none bg-slate-200" onClick={handleCancel}>
+                      <button
+                        className="flex justify-center items-center w-full text-gray-900 px-4 py-3 rounded-md focus:outline-none bg-slate-200"
+                        onClick={handleCancel}
+                      >
                         <svg
                           className="w-6 h-6 mr-3"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg">
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"

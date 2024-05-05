@@ -134,12 +134,6 @@ const Sidebar = () => {
               </NavLink>
             </li>
             <div className="h-[1px] bg-slate-300 w-full my-2"></div>
-            <li>
-              <NavLink to={"/planner"} className="link">
-                <SlSettings size={23} className="min-w-max" />
-                Planner
-              </NavLink>
-            </li>
 
             <li className="" onClick={handleLogout}>
               <NavLink to={"/"} className="link">
