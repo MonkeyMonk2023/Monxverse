@@ -1,7 +1,7 @@
 {
   "name": "monkey_monk_github",
   "version": "0.1.0",
-  "home": "https://github.com/MonkeyMonk2023/MonkeyMonk",
+  "homepage": "https://github.com/MonkeyMonk2023/MonkeyMonk",
   "private": false,
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
