@@ -55,42 +55,23 @@ const Sidebar = () => {
     setShowDialog(false);
   };
 
-  const Nav_animation = isTabletMid
-    ? {
-        open: {
-          x: 0,
-          width: "30vw",
-          minWidth: "16rem",
-          transition: {
-            damping: 40,
-          },
-        },
-        closed: {
-          x: -250,
-          width: 0,
-          transition: {
-            damping: 40,
-            delay: 0.15,
-          },
-        },
-      }
-    : {
-        open: {
-          width: "20vw",
-          transition: {
-            damping: 40,
-          },
-        },
-        closed: {
-          width: "4rem",
-          transition: {
-            damping: 40,
-          },
-        },
-      };
+  const Nav_animation = {
+    open: {
+      width: "20vw",
+      transition: {
+        damping: 40,
+      },
+    },
+    closed: {
+      width: "4rem",
+      transition: {
+        damping: 40,
+      },
+    },
+  };
 
   return (
-    <div>
+    <div className="">
       <div
         onClick={() => setOpen(false)}
         className={`md:hidden fixed inset-0 max-h-screen z-[49] bg-black/50 ${
@@ -100,7 +81,7 @@ const Sidebar = () => {
       <motion.div
         ref={sidebarRef}
         variants={Nav_animation}
-        initial={{ x: isTabletMid ? -250 : 0 }}
+        initial={{ width: isTabletMid ? 0 : "20vw" }}
         animate={open ? "open" : "closed"}
         className="bg-white dark:bg-gray-900 dark:text-white text-gray shadow-xl z-[49]  overflow-hidden md:relative fixed h-screen"
       >
@@ -171,7 +152,7 @@ const Sidebar = () => {
                 }
           }
           transition={{ duration: 0 }}
-          className="absolute bg-slate-400 rounded-full p-2 w-fit h-fit md:block z-50  right-2 bottom-3 cursor-pointer"
+          className="absolute bg-slate-400 rounded-full p-2 w-fit h-fit z-50  right-2 bottom-3 cursor-pointer hidden md:block"
         >
           <IoIosArrowBack size={25} />
         </motion.div>

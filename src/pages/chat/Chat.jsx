@@ -23,6 +23,7 @@ import { useMediaQuery } from "react-responsive";
 import {} from "firebase/firestore";
 import { v4 as uuid } from "uuid";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import ProfileCard from '../../components/suggestionCards/ProfileCard'
 
 const Chat = () => {
   const [selectedChat, setSelectedChat] = useState(false);
@@ -39,6 +40,8 @@ const Chat = () => {
   const { user } = UserAuth();
   const currentUser = user;
   const { dispatch, data } = useContext(ChatContext);
+
+  const [showOtherUserProfile,setShowOtherUserProfile] = useState(true);
 
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data?.chatId), (doc) => {
@@ -253,7 +256,7 @@ const Chat = () => {
           )}
           {selectedChat && (
             <>
-              <div className="user-full-chat h-full flex flex-col  ">
+              <div className="user-full-chat h-full flex flex-col  relative">
                 <div className="w-full h-20 p-4 bg-white shadow-lg flex justify-between items-center ">
                   <div className="flex items-center ">
                     <div>
@@ -267,11 +270,11 @@ const Chat = () => {
                     <div className="w-10 h-10 rounded-full bg-blue-100 mr-4">
                       <img
                         src={data.User.photoURL}
-                        alt=""
+                        alt="profilePhoto"
                         className="w-full h-full rounded-full"
                       />
                     </div>
-                    <div>
+                    <div onClick={()=>setShowOtherUserProfile((prev => !prev))}  className="hover:underline cursor-pointer">
                       <span className="text-xs sm:text-sm lg:text-lg xl:text-xl whitespace-pre font-semibold">
                         {data.User.username}
                       </span>
@@ -282,6 +285,15 @@ const Chat = () => {
                     <FaCircleInfo />
                   </div>
                 </div>
+                {
+                  showOtherUserProfile &&
+                  <>
+                   {/* <p>{data.User.username}</p> */}
+                  <ProfileCard  user={data.User} key={data.User.userId} id={data.User.userId}/>
+                  </>
+                 
+                  // <div className=" max-w-96 w-full  h-96 absolute z-50 top-16">j</div>
+                }
                 <div className="h-full overflow-y-scroll  px-5 flex flex-col ">
                   {Object.entries(groupedMessages).map(([date, messages]) => (
                     <div key={date}>

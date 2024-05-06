@@ -46,6 +46,16 @@ const CompleteProfile = () => {
 
   const [userData, setUserData] = useState(null);
 
+  const [errors, setErrors] = useState({
+    username: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    bio: "",
+    gender: "",
+    DOB: "",
+  });
+
   const fetchUserData = async () => {
     try {
       const userQuery = query(
@@ -67,7 +77,19 @@ const CompleteProfile = () => {
     const { name, value } = e.target;
     let newValue = value;
 
-    const checkUsernameExists = async (username) => {
+    if (name === "username") {
+      newValue = value.replace(/[^a-z0-9_]/g, "");
+      setErrors({
+        ...errors,
+        username: "",
+      });
+    }
+
+    setProfileData({ ...profileData, [name]: newValue });
+  };
+
+  const checkUsernameExists =async(username)=>{
+    const isUsernameExist = async (username) => {
       try {
         const usersRef = collection(db, "users");
         const userQuery = query(usersRef, where("username", "==", username));
@@ -78,15 +100,7 @@ const CompleteProfile = () => {
         return false;
       }
     };
-
-    if (name === "username") {
-      newValue = value.replace(/[^a-z0-9_]/g, "");
-      setErrors({
-        ...errors,
-        username: "",
-      });
-
-      const usernameExists = await checkUsernameExists(newValue);
+    const usernameExists = await isUsernameExist(username);
       if (usernameExists) {
         setErrors({
           ...errors,
@@ -94,20 +108,10 @@ const CompleteProfile = () => {
         });
         return;
       }
-    }
+  }
 
-    setProfileData({ ...profileData, [name]: newValue });
-  };
 
-  const [errors, setErrors] = useState({
-    username: "",
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    bio: "",
-    gender: "",
-    DOB: "",
-  });
+
 
   const submitUserProfile = async (e) => {
     e.preventDefault();
@@ -345,6 +349,7 @@ const CompleteProfile = () => {
                 name="username"
                 value={profileData.username}
                 onChange={handleProfileChange}
+                onBlur={(e)=>checkUsernameExists(e.target.value)}
                 placeholder="Enter your username"
                 className="mt-0 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
               />

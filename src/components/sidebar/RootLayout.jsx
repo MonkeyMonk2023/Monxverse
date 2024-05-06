@@ -18,7 +18,7 @@ const RootLayout = ({children}) => {
       return (
         <div className="flex ">
           <Sidebar/>
-          <main className="h-screen flex-1 mx-auto overflow-y-scroll">{children}</main>
+          <main className="h-screen flex-1 mx-auto overflow-y-scroll md:pl-2 pl-4">{children}</main>
         </div>
       );
     }
