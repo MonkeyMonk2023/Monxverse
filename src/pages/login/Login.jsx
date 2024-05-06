@@ -12,7 +12,9 @@ import { IoEye, IoEyeOff } from "react-icons/io5";
 import logo from "../../assets/logo.png";
 
 import gsap from "gsap";
-// import TextPlugin from "gsap/TextPlugin";
+import TextPlugin from "gsap/TextPlugin";
+
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -44,8 +46,6 @@ const Login = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      console.log(user);
-      console.log("User signed in with Google successfully!");
       navigate("/dashboard");
     } catch (error) {
       console.error("Error signing in with Google:", error.message);
@@ -63,7 +63,6 @@ const Login = () => {
           password
         );
         const user = userCredential.user;
-        console.log(user);
         if (user) {
           navigate("/completeProfile");
         }
@@ -96,7 +95,6 @@ const Login = () => {
       }
     }
     else{
-      console.log("enter email");
     }
     
   };
@@ -120,39 +118,42 @@ const Login = () => {
   let currentLetterIndex = 0;
   let intervalId;
 
-  // useLayoutEffect(() => {
-  //   gsap.registerPlugin(TextPlugin);
-
-    // const animateText = () => {
-    //   intervalId = setInterval(() => {
-    //     const currentSentence = sentences[currentSentenceIndex];
-    //     const currentText = currentSentence.slice(0, currentLetterIndex);
-    //     gsap.to(textRef.current, {
-    //       duration: 0.05,
-    //       text: currentText,
-    //       ease: "power1.in",
-    //     });
-
-    //     currentLetterIndex++;
-
-    //     if (currentLetterIndex > currentSentence.length) {
-    //       clearInterval(intervalId);
-    //       currentLetterIndex = 0;
-    //       currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
-    //       setTimeout(animateText, 2000); // Delay before starting the next sentence
-    //     }
-    //   }, 70);
-    // };
-
-    // animateText();
-
-  //   return () => clearInterval(intervalId); // Cleanup
-  // }, []);
+  useLayoutEffect(() => {
+    gsap.registerPlugin(TextPlugin);
+  
+    const animateText = () => {
+      intervalId = setInterval(() => {
+        const currentSentence = sentences[currentSentenceIndex];
+        const currentText = currentSentence.slice(0, currentLetterIndex);
+        gsap.to(textRef.current, {
+          duration: 0.05,
+          text: currentText,
+          ease: "power1.in",
+        });
+  
+        currentLetterIndex++;
+  
+        if (currentLetterIndex > currentSentence.length) {
+          clearInterval(intervalId);
+          currentLetterIndex = 0;
+          currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
+          setTimeout(animateText, 2000);
+        }
+      }, 70);
+    };
+  
+    if (textRef.current) {
+      animateText();
+    }
+  
+    return () => clearInterval(intervalId);
+  }, []);
+  
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
-        <div className="max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1">
+      <div className="min-h-screen bg-white text-gray-900 flex justify-center items-center">
+        <div className="max-w-screen-xl m-0 sm:m-20 shadow-none sm:rounded-lg flex justify-center flex-1 lg:shadow-xl">
           <div className=" w-full lg:w-1/2 p-6 sm:p-12">
             <div className="text-center w-full flex justify-center items-center">
               <div className="w-16 h-16 bg-slate-800 rounded-full mx-4 p-2">
@@ -240,7 +241,7 @@ const Login = () => {
                     )}
                   </button>
                   <div>
-                    <p className="hover:underline cursor-pointer mt-2" onClick={handleResetPassword}>
+                    <p className="underline cursor-pointer mt-2" onClick={handleResetPassword}>
                       forgot password?
                     </p>
                   </div>
@@ -278,8 +279,8 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <div className="flex-1 bg-primary-200 text-center hidden lg:flex">
-          <div className="auth-bg w-full h-screen flex justify-center items-center px-4 text-center">
+          <div className="flex-1 text-center hidden lg:flex login-card justify-center items-center">
+          <div className="auth-bg flex justify-center items-center p-4 text-center w-3/4 min-h-32">
             <h3
               className="text-xl md:text-4xl font-bold text-white"
               ref={textRef}

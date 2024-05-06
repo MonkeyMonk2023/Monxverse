@@ -19,7 +19,6 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 
 const CompleteProfile = () => {
-  console.log(auth.PhoneAuthProvider);
   const defaultProfileImage =
     "https://firebasestorage.googleapis.com/v0/b/monkeymonk-8d654.appspot.com/o/profileImages%2Fdefault_user.jpg?alt=media&token=fd3200cf-e81e-4b27-8528-7307df8d99ab";
 
@@ -58,8 +57,6 @@ const CompleteProfile = () => {
         const userData = querySnapshot.docs.map((doc) => doc.data());
         setUserData(userData[0]);
         setProfileData(userData[0]);
-      } else {
-        console.log("No matching documents found.");
       }
     } catch (error) {
       console.error("Error fetching user data:", error.message);
@@ -68,7 +65,6 @@ const CompleteProfile = () => {
 
   const handleProfileChange = async (e) => {
     const { name, value } = e.target;
-    console.log(name, value, "name val");
     let newValue = value;
 
     const checkUsernameExists = async (username) => {
@@ -136,7 +132,6 @@ const CompleteProfile = () => {
     });
     setErrors(newErrors);
 
-    // If there are errors, stop submission
     if (Object.keys(newErrors).length > 0) {
       return;
     }
@@ -155,8 +150,6 @@ const CompleteProfile = () => {
         await uploadBytes(storageRef, profileImage);
         imageUrl = await getDownloadURL(storageRef);
       }
-
-      console.log(userData, "userData");
 
       const updatedUserData = {
         ...userData,
@@ -187,7 +180,6 @@ const CompleteProfile = () => {
 
   const handleProfileImageChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setProfileData((prevProfileData) => ({
       ...prevProfileData,
       [name]: value,
@@ -203,7 +195,6 @@ const CompleteProfile = () => {
       ...prevProfileData,
       phoneNumber: value,
     }));
-    console.log(value);
   };
 
   const [completeUserData, setCompleteUserData] = useState();
@@ -218,7 +209,6 @@ const CompleteProfile = () => {
           const user = userDocSnap.data();
           setCompleteUserData(user);
           if (user?.isProfileComplete) {
-            console.log(currentUser.emailVerified);
             if(currentUser.emailVerified){
               navigate("/dashboard");
             }
@@ -226,12 +216,9 @@ const CompleteProfile = () => {
               navigate("/verifyUser") 
             }
           }
-        } else {
-          console.log("User document does not exist.");
         }
       } catch (error) {
         console.error("Error fetching user document:", error);
-        alert("Error in fetching details");
       }
     };
 
@@ -255,7 +242,6 @@ const CompleteProfile = () => {
       );
       setVerificationId(verificationResult.verificationId);
       setLoading(false);
-      console.log("OTP sent successfully!");
     } catch (error) {
       setLoading(false);
       setError(error.message);
@@ -281,7 +267,6 @@ const CompleteProfile = () => {
     try {
       const confirmationResult = await auth.currentUser.confirmationResult(verificationId);
       await confirmationResult.confirm(otp);
-      console.log("Phone number added to profile:", profileData.phoneNumber);
     } catch (error) {
       setError(error.message);
     }
@@ -510,7 +495,7 @@ const CompleteProfile = () => {
                 onChange={handleProfileChange}
                 placeholder="Enter your date of birth"
                 className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-                max={new Date().toISOString().split("T")[0]}
+                max = '2007-06-29'
               />
               {errors.DOB && (
                 <p className="text-red-500 text-sm">{errors.DOB}</p>

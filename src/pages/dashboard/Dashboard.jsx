@@ -30,7 +30,6 @@ const Dashboard = () => {
   const [modifiedTripsData , setModifiedTripsData] = useState([])
 
   const filterTrips = () => {
-    // setModifiedTripsData(trips)
 
     let filteredTrips = modifiedTripsData.filter((trip) => {
       let sourceMatch = true;
@@ -54,7 +53,6 @@ const Dashboard = () => {
           trip.username?.toLowerCase().trim() ===
           searchUser.toLowerCase().trim();
       }
-      console.log(trips);
       return sourceMatch && destinationMatch && searchByUser;
     });
 
@@ -78,7 +76,6 @@ const Dashboard = () => {
     fetchTrips();
   }, []);
 
-  // model code
   const [showModal, setShowModal] = useState(false);
 
   function openModal() {
@@ -94,19 +91,7 @@ const Dashboard = () => {
       <div className="w-full h-full py-2 md:px-0 px-2">
         <div className="mb-24">
           <div className="banner-img h-72 pb-20 py-2 bg-primary-300 flex flex-col justify-between px-4 rounded-xl">
-            <div className="flex justify-end w-full">
-              <div className="  ">
-                <div
-                  onClick={openModal}
-                  className=" bg-white cursor-pointer py-2 px-4 mb-3 md:py-4 md:px-8 rounded-lg flex items-center  text-lg font-medium"
-                >
-                  Post Trip
-                  <IoPaperPlane className="ml-2 text-xl" />
-                </div>
-                {showModal && <PostTripForm closeModal={closeModal} />}
-              </div>
-            </div>
-            <div className=" p-3 md:p-4 bg-white  max-w-[60rem] mx-auto rounded-2xl w-full shadow-2xl shadow-slate-300 flex flex-col sm:flex-row items-center justify-center">
+            <div className=" p-3 md:p-4 bg-white  max-w-[60rem] mx-auto rounded-2xl w-full flex flex-col sm:flex-row items-center justify-center my-10">
               <div className="w-full sm:py-2 md:mx-2 ">
                 <div className="relative my-2">
                   <input
@@ -148,12 +133,23 @@ const Dashboard = () => {
                   type="submit"
                   onClick={() => {
                     setModifiedTripsData((prevtrips)=>(prevtrips=trips));
-                    console.log(modifiedTripsData.length,trips.length);
                     filterTrips()}}
                   className="bg-primary-400 text-white font-semibold flex justify-center items-center px-3 py-2 md:px-6 md:py-4 rounded-md focus:outline-none"
                 >
                   Search
                 </button>
+              </div>
+            </div>
+            <div className="flex justify-start w-full">
+              <div className="  ">
+                <div
+                  onClick={openModal}
+                  className=" bg-white cursor-pointer py-2 px-4 mb-3 md:py-4 md:px-8 rounded-lg flex items-center  text-lg font-medium"
+                >
+                  Post Trip
+                  <IoPaperPlane className="ml-2 text-xl" />
+                </div>
+                {showModal && <PostTripForm closeModal={closeModal} />}
               </div>
             </div>
           </div>

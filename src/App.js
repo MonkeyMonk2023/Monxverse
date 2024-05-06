@@ -4,7 +4,6 @@ import "./App.css";
 
 import Login from "./pages/login/Login";
 import Registration from "./pages/registration/Registration";
-import ResetPassword from "./pages/resetPassword/ResetPassword";
 import RootLayout from "./components/sidebar/RootLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Profile from "./pages/profile/Profile";
@@ -22,9 +21,9 @@ import Navbar from './components/navbar/Navbar';
 import TripPlanner from './pages/TripPlanner/TripPlanner';
 import Loader from './components/loader/Loader';
 import TermsAndConditions from './containers/Terms/TermsAndConditions';
-import ProfileCard from './components/suggestionCards/ProfileCard';
 import PrivacyPolicy from './containers/Terms/PrivacyPolicy';
 import VerifyUser from "./pages/verifyUser/VerifyUser";
+import EmailVerification from "./pages/EmailVerification/EmailVerification";
 
 function App() {
   return (
@@ -57,10 +56,9 @@ function App() {
           } />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
-        <Route path="/resetPassword" element={<ResetPassword />} />
         <Route path="/completeProfile" element={<CompleteProfile />} />
         <Route path="/verifyUser" element={<VerifyUser />} />
-
+        <Route path="/emailVerify" element={<EmailVerification />} />
         <Route
           path="/*"
           element={

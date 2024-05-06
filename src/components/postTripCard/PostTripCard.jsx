@@ -29,8 +29,6 @@ const PostTripCard = ({ trip }) => {
         if (userDocSnap.exists()) {
           const userData = userDocSnap.data();
           setCurrentUser(userData);
-        } else {
-          console.log("User document does not exist.");
         }
       } catch (error) {
         console.error("Error fetching user document:", error);
@@ -41,7 +39,6 @@ const PostTripCard = ({ trip }) => {
 
   const [username, setUsername] = useState("");
   const [tripPartner, setTripPartner] = useState("");
-  // console.log(trip)
 
   useEffect(() => {
     if (trip && trip.userId) {
@@ -53,9 +50,6 @@ const PostTripCard = ({ trip }) => {
           if (userDoc.exists()) {
             setUsername(userDoc.data().username);
             setTripPartner(userDoc.data());
-            console.log(tripPartner.username);
-          } else {
-            console.log("User document not found");
           }
         } catch (error) {
           console.error("Error fetching user document:", error);
@@ -67,16 +61,12 @@ const PostTripCard = ({ trip }) => {
 
   const handleSelect = async () => {
     const user = tripPartner;
-    console.log("hey", tripPartner, currentUser);
-    console.log(user.userId, "userID");
     const combinedId =
       currentUser.userId > user.userId
         ? currentUser.userId + user.userId
         : user.userId + currentUser.userId;
     try {
       const res = await getDoc(doc(db, "chats", combinedId));
-      console.log(res.exists());
-
       if (!res.exists()) {
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
@@ -88,8 +78,6 @@ const PostTripCard = ({ trip }) => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-        console.log("first");
-
         await updateDoc(doc(db, "userChats", user.userId), {
           [combinedId + ".userInfo"]: {
             userId: currentUser.userId,
@@ -98,11 +86,9 @@ const PostTripCard = ({ trip }) => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-        console.log("second");
         navigate("/chat")
       }
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -121,13 +107,6 @@ const PostTripCard = ({ trip }) => {
             <h2 className="font-extrabold mx-5 text-xl">
               {tripPartner.username}
             </h2>
-            {/* <p className="text-gray-500 ">
-            <FontAwesomeIcon
-            icon={faClock}
-            className="text-primary-300 mx-2"
-            size="lg"
-          />
-              5 mins ago</p> */}
           </div>
         </div>
         <div className="items-center w-full flex">

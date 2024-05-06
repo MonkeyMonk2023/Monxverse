@@ -19,8 +19,6 @@ import map from "../../assets/map.png";
 function PostTripForm({ closeModal }) {
   const { user } = UserAuth();
   const currentUser = user;
-  console.log(user);
-
 
   const [selectedSourceId, setSelectedSourceId] = useState(null);
   const [selectedDestinationId, setSelectedDestinationId] = useState(null);
@@ -52,9 +50,6 @@ function PostTripForm({ closeModal }) {
         if (userDocSnap.exists()) {
           const user = userDocSnap.data();
           setCompleteUserData(user);
-          console.log("User data:", user);
-        } else {
-          console.log("User document does not exist.");
         }
       } catch (error) {
         console.error("Error fetching user document:", error);
@@ -79,11 +74,9 @@ function PostTripForm({ closeModal }) {
         : destinationAutoCompleteRef.current.getPlace();
     if (place) {
       if (field === "destination") {
-        console.log("destination", place.name);
         setSelectedDestinationId(place.place_id);
         setSelectedTripDestination(place.name);
       } else if (field === "source") {
-        console.log("source", place.name);
         setSelectedSourceId(place.place_id);
         setSelectedTripSource(place.name);
       }
@@ -122,7 +115,7 @@ function PostTripForm({ closeModal }) {
   };
 
   const handleTagInputKeyDown = (e) => {
-    if (e.key === " " && tagInput.trim() !== "") {
+    if ((e.key === " " || e.keyCode == 32) && tagInput.trim() !== "") {
       if (tags.length < 5) {
         setTags([...tags, "#" + tagInput.trim()]);
         setTagError("");
@@ -215,9 +208,6 @@ function PostTripForm({ closeModal }) {
     if (!tripDescription.trim()) {
       currentErrors.tripDescription = "Please enter a trip description.";
     }
-    if (tags.length === 0) {
-      currentErrors.tags = "Please enter at least one tag.";
-    }
 
     // Check if errors exist
     if (Object.keys(currentErrors).length > 0) {
@@ -251,7 +241,6 @@ function PostTripForm({ closeModal }) {
       handleCancel();
     } catch (error) {
       console.error("Error adding trip details: ", error);
-      alert("Error adding trip details. Please try again later.");
     }
   };
 
@@ -269,7 +258,6 @@ function PostTripForm({ closeModal }) {
 
   function closeModalBgClick(e) {
     if (e.target.id === "modal-bg") {
-      console.log("clicked modal bg");
       closeModal();
     }
   }
@@ -429,7 +417,7 @@ function PostTripForm({ closeModal }) {
                             value={tagInput}
                             onChange={handleTagInputChange}
                             onKeyDown={handleTagInputKeyDown}
-                            placeholder="Enter tags separated by spaces"
+                            placeholder="Enter tags (Hit space after each tag)"
                             className="flex-grow text-black dark-app:text-white relative w-full cursor-pointer rounded-xl border bg-white py-4 pl-6 leading-tight dark-app:bg-[#444444] pr-4 border-neutral-300 dark-app:border-transparent text-left transition-all focus:outline-none focus:transition-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-200"
                           />
                         </div>

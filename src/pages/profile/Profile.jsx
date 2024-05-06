@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import { auth, db, storage } from "../../firebase/Firebase";
 import {
   doc,
@@ -11,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { UserAuth } from "../../context/authContext";
+
 import { useNavigate } from "react-router-dom";
 import {
   deleteUser,
@@ -18,13 +20,24 @@ import {
   updatePassword,
 } from "firebase/auth";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import Dialog from "../../components/dialogs/DeleteAccDialog";
+
 const Profile = () => {
   const navigate = useNavigate();
   const { user } = UserAuth();
   const currentUser = user;
 
-  // const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({}); 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isPhoneEnabled, setIsPhoneEnabled] = useState(false);
   const [profileData, setProfileData] = useState({});
+  const [showDialog, setShowDialog] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevProfileData) => ({
@@ -43,9 +56,6 @@ const Profile = () => {
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs.map((doc) => doc.data());
         setProfileData(userData[0]);
-        // console.log("profile", profileData);
-      } else {
-        console.log("No matching documents found.");
       }
     } catch (error) {
       console.error("Error fetching user data:", error.message);
@@ -60,7 +70,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       await updateDoc(doc(db, "users", currentUser.uid), profileData);
-      alert("User data updated successfully");
+      showToastMessage("Profile data updated successfully! ");
     } catch (error) {
       console.error("Error updating user data: ", error);
     }
@@ -86,11 +96,11 @@ const Profile = () => {
     }));
   };
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmedPassword, setConfirmedPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [isPhoneEnabled, setIsPhoneEnabled] = useState(false);
+  const showToastMessage = (toastMessage) => {
+    toast.success(toastMessage, {
+      position: "bottom-right",
+    });
+  };
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -108,7 +118,7 @@ const Profile = () => {
         currentPassword
       );
       await updatePassword(auth.currentUser, newPassword);
-      alert("Password updated successfully");
+      showToastMessage("password updated successfully !");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmedPassword("");
@@ -120,66 +130,67 @@ const Profile = () => {
     }
   };
 
+  const handleCancelDialog = () => {
+    setShowDialog(false);
+  };
+
+  const handleConfirmDialog = () => {
+    handleDelete();
+    setShowDialog(false);
+  };
+
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?"
-    );
-    if (confirmDelete) {
-      try {
-        const querySnapshot = await getDocs(
-          query(collection(db, "trips"), where("userId", "==", currentUser.uid))
-        );
-        const deletePromises = querySnapshot.docs.map(async (doc) => {
-          await deleteDoc(doc.ref);
-        });
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "trips"), where("userId", "==", currentUser.uid))
+      );
+      const deletePromises = querySnapshot.docs.map(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
 
-        await Promise.all(deletePromises);
-        await deleteUser(auth.currentUser);
-        await deleteDoc(doc(db, "users", currentUser.uid));
+      await Promise.all(deletePromises);
+      await deleteUser(auth.currentUser);
+      await deleteDoc(doc(db, "users", currentUser.uid));
 
-        console.log(
-          "User authentication account and associated trips deleted successfully"
-        );
-        navigate("/login");
-      } catch (error) {
-        console.error("Error deleting user and associated trips: ", error);
-      }
+      navigate("/login");
+    } catch (error) {
+      console.error("Error deleting user and associated trips: ", error);
     }
   };
 
   return (
-    <div id="app-layout" class="overflow-x-hidden flex">
+    <div id="app-layout" className="overflow-x-hidden flex">
       <div
         id="app-layout-content"
-        class="min-h-screen w-full min-w-[100vw] md:min-w-0 [transition:margin_0.25s_ease-out]"
+        className="min-h-screen w-full min-w-[100vw] md:min-w-0 [transition:margin_0.25s_ease-out]"
       >
-        <div class="p-6">
-          <div class="flex items-center mb-4 border-b border-gray-300 pb-4">
-            <h1 class="inline-block text-xl font-semibold leading-6">
+        <div className="p-6">
+          <div className="flex items-center mb-4 border-b border-gray-300 pb-4">
+            <h1 className="inline-block text-xl font-semibold leading-6">
               General
             </h1>
           </div>
 
-          <div class="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="mb-lg-0 col-span-1">
-              <h4 class="mb-1">General Settings</h4>
-              <p class="text-gray-600">Profile configuration settings</p>
+          <div className="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mb-lg-0 col-span-1">
+              <h4 className="mb-1">General Settings</h4>
+              <p className="text-gray-600">Profile configuration settings</p>
             </div>
-            <div class="card shadow col-span-3">
-              <div class="card-body">
-                <div class="mb-6">
-                  <h4 class="mb-1">General Settings</h4>
+            <div className="card shadow col-span-3">
+              <div className="card-body">
+                <div className="mb-6">
+                  <h4 className="mb-1">General Settings</h4>
                 </div>
-                <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
-                  <div class="flex-1 text-gray-800 font-semibold">
-                    <h5 class="mb-0">Avatar</h5>
+                <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                  <div className="flex-1 text-gray-800 font-semibold">
+                    <h5 className="mb-0">Avatar</h5>
                   </div>
-                  <div class="flex-[3]">
-                    <div class="flex items-center ">
-                      <div class="me-3 w-28 h-28 border-spacing-1 rounded-full">
+                  <div className="flex-[3]">
+                    <div className="flex items-center ">
+                      <div className="me-3 w-28 h-28 border-spacing-1 rounded-full">
                         <img
                           src={profileData.photoURL}
-                          class="rounded-full w-full h-full"
+                          className="rounded-full w-full h-full"
                           alt=""
                         />
                       </div>
@@ -201,7 +212,7 @@ const Profile = () => {
 
                         <button
                           type="button"
-                          class="btn gap-x-2 bg-white text-gray-800 border-gray-300 disabled:opacity-50 disabled:pointer-events-none hover:text-white hover:bg-gray-700 hover:border-gray-700 active:bg-gray-700 active:border-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-300"
+                          className="btn gap-x-2 bg-white text-gray-800 border-gray-300 disabled:opacity-50 disabled:pointer-events-none hover:text-white hover:bg-gray-700 hover:border-gray-700 active:bg-gray-700 active:border-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-300"
                           onClick={handleRemoveProfilePhoto}
                         >
                           Remove
@@ -212,21 +223,21 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <div class="mb-6">
-                    <h4 class="mb-1">Basic information</h4>
+                  <div className="mb-6">
+                    <h4 className="mb-1">Basic information</h4>
                   </div>
                   <form onSubmit={handleSaveChanges}>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="fullName"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Full name
                       </label>
-                      <div class="flex-[3] w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex-[3] w-full grid grid-cols-1 md:grid-cols-2 gap-6">
                         <input
                           type="text"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           placeholder="First name"
                           id="fullName"
                           name="firstName"
@@ -235,7 +246,7 @@ const Profile = () => {
                         />
                         <input
                           type="text"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           placeholder="Last name"
                           id="lastName"
                           name="lastName"
@@ -245,17 +256,17 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="bio"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Bio
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <textarea
                           name="bio"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
                           placeholder="Bio"
                           id="bio"
                           value={profileData.bio}
@@ -264,17 +275,17 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="email"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Email
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="email"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           id="email"
                           name="email"
                           value={profileData.email}
@@ -283,18 +294,18 @@ const Profile = () => {
                         />
                       </div>
                     </div>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="phone"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Phone
                         <span></span>
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="text"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           placeholder="Phone"
                           id="phone"
                           name="phoneNumber"
@@ -307,21 +318,21 @@ const Profile = () => {
                     <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         for="toggle"
-                        class=" flex-1 text-gray-800 font-semibold"
+                        className=" flex-1 text-gray-800 font-semibold"
                       >
                         show phone number
                       </label>
-                      <div class=" relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                      <div className=" relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                         <input
                           type="checkbox"
                           checked={profileData.showPhoneNumber}
                           name="toggle"
                           id="toggle"
-                          class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                          className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                         />
                         <label
                           for="toggle"
-                          class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+                          className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
                           onClick={() =>
                             setProfileData({
                               ...profileData,
@@ -332,17 +343,17 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="twitter"
-                        class="flex-1 text-gray-800 font-semibold "
+                        className="flex-1 text-gray-800 font-semibold "
                       >
                         Twitter
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="text"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
                           placeholder="Enter Twitter URL"
                           id="twitter"
                           name="twitterProfile"
@@ -352,17 +363,17 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="instagram"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Instagram
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="text"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
                           placeholder="Enter Instagram URL"
                           id="instagram"
                           name="instagramProfile"
@@ -372,17 +383,17 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="facebook"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Facebook
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="text"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3"
                           placeholder="Enter Facebook URL"
                           id="facebook"
                           name="facebookProfile"
@@ -391,45 +402,46 @@ const Profile = () => {
                         />
                       </div>
                     </div>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
-                      <div class="flex-1 text-gray-800 font-semibold"></div>
-                      <div class="flex-[3]">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                      <div className="flex-1 text-gray-800 font-semibold"></div>
+                      <div className="flex-[3]">
                         <button
                           type="submit"
-                          class="btn bg-primary-400 text-white border-primary-600 hover:bg-primary-500 hover:border-primary-700 active:bg-primary-800 active:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
+                          className="btn bg-primary-400 text-white border-primary-600 hover:bg-primary-500 hover:border-primary-700 active:bg-primary-800 active:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
                         >
                           Save Changes
                         </button>
                       </div>
                     </div>
                   </form>
+                  <ToastContainer />
                 </div>
               </div>
             </div>
           </div>
-          <div class="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="col-span-1">
-              <h4 class="mb-1">Passoword Settings</h4>
-              <p class="text-gray-600">Add password settings to profile</p>
+          <div className="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="col-span-1">
+              <h4 className="mb-1">Passoword Settings</h4>
+              <p className="text-gray-600">Add password settings to profile</p>
             </div>
-            <div class="card shadow col-span-3">
-              <div class="card-body">
+            <div className="card shadow col-span-3">
+              <div className="card-body">
                 <div>
                   <form onSubmit={handleChangePassword}>
-                    <div class="mb-6">
-                      <h4 class="mb-1">Change your password</h4>
+                    <div className="mb-6">
+                      <h4 className="mb-1">Change your password</h4>
                     </div>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         for="password"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Current password
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="password"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           placeholder="Enter Current Password"
                           id="password"
                           required
@@ -438,17 +450,17 @@ const Profile = () => {
                         />
                       </div>
                     </div>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         for="newPassword"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         New password
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="password"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           placeholder="Enter New Password"
                           id="newPassword"
                           required
@@ -457,17 +469,17 @@ const Profile = () => {
                         />
                       </div>
                     </div>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         for="confirmedPassword"
-                        class="flex-1 text-gray-800 font-semibold"
+                        className="flex-1 text-gray-800 font-semibold"
                       >
                         Confirm new password
                       </label>
-                      <div class="flex-[3] w-full">
+                      <div className="flex-[3] w-full">
                         <input
                           type="password"
-                          class="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
+                          className="border border-gray-300 text-gray-900 rounded focus:ring-primary-600 focus:border-primary-600 block w-full p-2 px-3 disabled:opacity-50 disabled:pointer-events-none"
                           placeholder="Confirm new password"
                           id="confirmedPassword"
                           required
@@ -482,13 +494,13 @@ const Profile = () => {
                       </div>
                     </div>
                     <div></div>
-                    <div class="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
-                      <div class="flex-1 text-gray-800 font-semibold"></div>
-                      <div class="flex-[3]">
+                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                      <div className="flex-1 text-gray-800 font-semibold"></div>
+                      <div className="flex-[3]">
                         <div>
-                          <h5 class="mb-1">Password requirements:</h5>
+                          <h5 className="mb-1">Password requirements:</h5>
                           <p>Ensure that these requirements are met:</p>
-                          <ul class="list-disc list-inside my-4">
+                          <ul className="list-disc list-inside my-4">
                             <li>
                               Minimum 8 characters long the more, the better
                             </li>
@@ -502,7 +514,7 @@ const Profile = () => {
                         </div>
                         <button
                           type="submit"
-                          class="btn bg-primary-400 text-white border-primary-600 hover:bg-primary-500 hover:border-primary-700 active:bg-primary-800 active:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
+                          className="btn bg-primary-400 text-white border-primary-600 hover:bg-primary-500 hover:border-primary-700 active:bg-primary-800 active:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
                         >
                           Save Changes
                         </button>
@@ -513,26 +525,34 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <div class="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="col-span-1">
-              <h4 class="mb-1">Delete Account</h4>
-              <p class="text-gray-600">Easily set up social media accounts</p>
+          <div className="mb-8 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="col-span-1">
+              <h4 className="mb-1">Delete Account</h4>
+              <p className="text-gray-600">Easily set up social media accounts</p>
             </div>
-            <div class="card shadow col-span-3">
-              <div class="card-body">
-                <h4 class="mb-1">Danger Zone</h4>
-                <p class="mb-4">
+            <div className="card shadow col-span-3">
+              <div className="card-body">
+                <h4 className="mb-1">Danger Zone</h4>
+                <p className="mb-4">
                   Delete any and all content you have, such as articles,
                   comments, your reading list or chat messages. Allow your
                   username to become available to anyone.
                 </p>
                 <button
                   type="submit"
-                  onClick={handleDelete}
-                  class="btn bg-primary-400 text-white border-primary-600 hover:bg-primary-500 hover:border-primary-700 active:bg-primary-800 active:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
+                  onClick={() => {
+                    setShowDialog(true);
+                  }}
+                  className="btn bg-primary-400 text-white border-primary-600 hover:bg-primary-500 hover:border-primary-700 active:bg-primary-800 active:border-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300"
                 >
                   Delete Account
                 </button>
+                {showDialog && (
+                  <Dialog
+                    onCancel={handleCancelDialog}
+                    onConfirm={handleConfirmDialog}
+                  />
+                )}
               </div>
             </div>
           </div>

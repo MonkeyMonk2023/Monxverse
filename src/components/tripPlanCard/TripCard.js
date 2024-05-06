@@ -15,7 +15,6 @@ import {
   faCaravan,
   faShoppingCart,
   faSpa,
-  faSynagogue,
   faLandmark,
   faPaw,
   faMuseum,
@@ -64,9 +63,6 @@ const TripPlanCard = ({place, place_time, place_bio, place_price, place_rating, 
       break;
     case "faSpa":
       icon = faSpa;
-      break;
-    case "faSynagogue":
-      icon = faSynagogue;
       break;
     case "faLandmark":
       icon = faLandmark;

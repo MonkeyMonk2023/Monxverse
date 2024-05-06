@@ -91,13 +91,12 @@ const BlogCatalog = () => {
               />
             </div>
             <div className="flex flex-col space-y-2 w-4/6">
-              <a
-                href="#"
+              <p
                 className="font-serif hover:underline"
                 onClick={() => handleBlogClick(blog.id)}
               >
                 {blog.title}
-              </a>
+              </p>
               <p className="text-xs dark:text-gray-400">{blog.author}</p>
               <p className="block text-primary-400 lg:inline text-xs">
                 {blog.category}

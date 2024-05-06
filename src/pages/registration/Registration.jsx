@@ -99,6 +99,10 @@ const Registration = () => {
     e.preventDefault();
 
     const newErrors = {};
+    if (!termsAccepted) {
+      setSignupError("Please accept the terms and conditions to sign up.");
+      return;
+    }
 
     if (!formData.email) {
       newErrors.email = "Email is required";
@@ -167,7 +171,6 @@ const Registration = () => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
       const user = result.user;
 
       const userData = {
@@ -230,18 +233,18 @@ const Registration = () => {
           clearInterval(intervalId);
           currentLetterIndex = 0;
           currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
-          setTimeout(animateText, 2000); // Delay before starting the next sentence
+          setTimeout(animateText, 2000);
         }
       }, 70);
     };
 
     animateText();
 
-    return () => clearInterval(intervalId); // Cleanup
+    return () => clearInterval(intervalId);
   }, []);
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
-      <div className=" max-w-screen-xl m-0 sm:m-20 bg-white shadow sm:rounded-lg flex justify-center flex-1 flex-row-reverse">
+    <div className="min-h-screen bg-white text-gray-900 flex justify-center items-center">
+      <div className=" max-w-screen-xl m-0 sm:m-20 shadow-none lg:shadow-xl sm:rounded-lg flex justify-center flex-1 flex-row-reverse">
         <div className="lg:w-1/2 xl:w-7/12 p-6 sm:p-12">
           <div className="text-center w-full flex justify-center items-center">
             <div className="w-16 h-16 bg-slate-800 rounded-full mx-4 p-2">
@@ -311,37 +314,6 @@ const Registration = () => {
                 {errors.confirmPassword && (
                   <span className="text-red-500">{errors.confirmPassword}</span>
                 )}
-
-                <div className="flex  justify-center my-4 ">
-                  <input
-                    id="checkbox-1"
-                    aria-describedby="checkbox-1"
-                    type="checkbox"
-                    className="bg-gray-50 mt-1 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded"
-                    checked={termsAccepted}
-                    onChange={handleCheckboxChange}
-                    required
-                  />
-                  <label
-                    htmlFor="checkbox-1"
-                    className="text-sm ml-3 font-medium text-gray-900"
-                  >
-                    I agree to the 
-                    <span className="text-blue-600 hover:underline ml-1" 
-                    onClick={() => {
-                      navigate("/terms&conditions");
-                    }}>
-                       terms of service
-                    </span>{" "}
-                    and
-                    <p className="text-blue-600 hover:underline"
-                    onClick={() => {
-                      navigate("/privacypolicy");
-                    }}>
-                      privacy policy
-                    </p>
-                  </label>
-                </div>
                 <button className="mt-5 tracking-wide font-semibold bg-primary-400 text-gray-100 w-full py-4 rounded-lg hover:bg-primary-500 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                   <svg
                     className="w-6 h-6 -ml-2"
@@ -377,6 +349,36 @@ const Registration = () => {
                   <span className="ml-4">Sign Up with Google</span>
                 </button>
               </div>
+              <div className="flex  justify-center my-4 ">
+                  <input
+                    id="checkbox-1"
+                    aria-describedby="checkbox-1"
+                    type="checkbox"
+                    className="bg-gray-50 mt-1 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded"
+                    checked={termsAccepted}
+                    onChange={handleCheckboxChange}
+                    required
+                  />
+                  <label
+                    htmlFor="checkbox-1"
+                    className="text-sm ml-3 font-medium text-gray-900"
+                  >
+                    I agree to the 
+                    <span className="text-blue-600 hover:underline ml-1 cursor-pointer" 
+                    onClick={() => {
+                      navigate("/terms&conditions");
+                    }}>
+                       terms of service
+                    </span>{" "}
+                    and
+                    <p className="text-blue-600 hover:underline cursor-pointer"
+                    onClick={() => {
+                      navigate("/privacypolicy");
+                    }}>
+                      privacy policy
+                    </p>
+                  </label>
+                </div>
               <div className="my-12  text-center">
                 <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                   Already have an account?
@@ -391,8 +393,8 @@ const Registration = () => {
             </div>
           </div>
         </div>
-        <div className="flex-1 bg-primary-200 text-center hidden lg:flex">
-          <div className="auth-bg w-full h-screen flex justify-center items-center px-4 text-center">
+        <div className="flex-1 text-center hidden lg:flex registration-card justify-center items-center">
+          <div className="auth-bg w-3/4 flex justify-center items-center p-4 text-center min-h-32">
             <h3
               className="text-xl md:text-4xl font-bold text-white"
               ref={textRef}> </h3>

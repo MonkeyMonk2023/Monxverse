@@ -35,9 +35,6 @@ const Search = () => {
         if (userDocSnap.exists()) {
           const user = userDocSnap?.data();
           setCompleteUserData(user);
-          console.log("User data:", user);
-        } else {
-          console.log("User document does not exist.");
         }
       } catch (error) {
         console.error("Error fetching user document:", error);
@@ -51,7 +48,6 @@ const Search = () => {
 
   const handleSearch = async (e) => {
     const searchString = e.target.value.trim();
-    console.log(searchString);
 
     if (searchString === "") {
       setSuggestedUsers([]);
@@ -85,25 +81,15 @@ const Search = () => {
   const handleSelect = async (user) => {
     setSuggestedUsers([]);
     setErr("");
-    console.log(user, "hey", currentUser.uid);
     const combinedId =
       currentUser.uid > user.userId
         ? currentUser.uid + user.userId
         : user.userId + currentUser.uid;
-    console.log(combinedId);
     try {
       const res = await getDoc(doc(db, "chats", combinedId));
-      console.log(res.exists());
 
       if (!res.exists()) {
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
-
-        console.log(
-          "checkingg...",
-          completeUserData.username,
-          currentUser.uid,
-          completeUserData.photoURL
-        );
 
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [combinedId + ".userInfo"]: {
@@ -113,7 +99,6 @@ const Search = () => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-        console.log("first");
 
         await updateDoc(doc(db, "userChats", user.userId), {
           [combinedId + ".userInfo"]: {
@@ -123,7 +108,6 @@ const Search = () => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-        console.log("second");
       }
     } catch (err) {
       console.log(err);

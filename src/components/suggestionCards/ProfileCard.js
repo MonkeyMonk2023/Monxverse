@@ -1,54 +1,8 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React from "react";
 
 import "./ProfileCard.css";
 
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import TextPlugin from "gsap/TextPlugin";
-
 const ProfileCard = () => {
-  const textRef = useRef(null);
-
-  const sentences = [
-    "To Travel is to Live !",
-    "Travel is the Best education. You learn about Culture, History and yourself.",
-    "Travel allows you to escape ordinary and embrace the extraordinary.",
-    "Travel Opens your Heart, Broadens your mind, and fills your life with stories to tell.",
-    "Travel is the only thing which you can spend that makes you richer.!"
-  ];
-  let currentSentenceIndex = 0;
-  let currentLetterIndex = 0;
-  let intervalId;
-
-  useLayoutEffect(() => {
-    gsap.registerPlugin(TextPlugin);
-
-    const animateText = () => {
-      intervalId = setInterval(() => {
-        const currentSentence = sentences[currentSentenceIndex];
-        const currentText = currentSentence.slice(0, currentLetterIndex);
-        gsap.to(textRef.current, {
-          duration: 0.05,
-          text: currentText,
-          ease: "power1.in",
-        });
-
-        currentLetterIndex++;
-
-        if (currentLetterIndex > currentSentence.length) {
-          clearInterval(intervalId);
-          currentLetterIndex = 0;
-          currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
-          setTimeout(animateText, 2000); // Delay before starting the next sentence
-        }
-      }, 70);
-    };
-
-    animateText();
-
-    return () => clearInterval(intervalId); // Cleanup
-  }, []);
-
   return (
     <>
         <div className="max-w-xs">
@@ -106,12 +60,6 @@ const ProfileCard = () => {
             </div>
           </div>
         </div>
-        <div className="bg w-1/2 h-screen flex justify-center items-center px-4 text-center">
-        <h3
-                      className="text-xl md:text-4xl font-bold text-white"
-                      ref={textRef}
-                    ></h3>
-</div>
 </>
   );
 };

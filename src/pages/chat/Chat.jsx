@@ -42,7 +42,7 @@ const Chat = () => {
 
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data?.chatId), (doc) => {
-      doc.exists() && console.log(doc.data().messages);
+      doc.exists();
       doc.exists() && setMsgs(doc.data().messages);
     });
 
@@ -73,7 +73,6 @@ const Chat = () => {
     if (!isLgScreen) {
       setShowChatList(false);
     }
-    // console.log("hey whats uppppppppppppppppppppppppppppppp");
 
     const chatRef = doc(db, "chats", data.chatId);
     const chatSnapshot = await getDoc(chatRef);
@@ -81,7 +80,6 @@ const Chat = () => {
     if (chatSnapshot.exists()) {
       const chatData = chatSnapshot.data();
       const messages = chatData.messages || [];
-      console.log("checking msgs in update status",messages.length)
   
       const updatedMessages = messages.map((message) => {
         if ((message.senderId !== currentUser.uid )&& !message.readStatus[currentUser.uid]) {
@@ -147,7 +145,6 @@ const Chat = () => {
       },
       [data.chatId + ".date"]: serverTimestamp(),
     });
-    console.log("update done");
     setText("");
     setImg(null);
   };
@@ -178,20 +175,15 @@ const Chat = () => {
 
     try {
       const chatRef = doc(db, "chats", chatId);
-      // console.log("chatId",chatId);
       const docSnapshot = await getDoc(chatRef);
   
       if (docSnapshot.exists()) {
         const chatData = docSnapshot.data();
         const messages = chatData.messages || [];
-        // console.log(messages.length,"ML");
           const unreadMessages = messages.filter((message) => {
           return message.senderId !== currentUser.uid && !message.readStatus[currentUser.uid];
         });
-        console.log(unreadMessages.length,"len");
         return unreadMessages.length  
-      } else {
-        console.log("No such document exists!");
       }
     } catch (error) {
       console.error("Error fetching messages:", error);

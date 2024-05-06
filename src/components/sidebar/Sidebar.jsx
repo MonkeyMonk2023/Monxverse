@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { motion } from "framer-motion";
 
-// * React icons
 import { IoIosArrowBack } from "react-icons/io";
-import { SlSettings } from "react-icons/sl";
 import { AiOutlineAppstore } from "react-icons/ai";
 import { BsPerson } from "react-icons/bs";
 import { HiOutlineDatabase } from "react-icons/hi";
@@ -15,6 +13,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { UserAuth } from "../../context/authContext";
 import logo from "../../assets/logo.png";
+import Dialog from "../dialogs/LogoutDialog";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -22,6 +21,7 @@ const Sidebar = () => {
 
   let isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
   const [open, setOpen] = useState(isTabletMid ? false : true);
+  const [showDialog, setShowDialog] = useState(false);
   const sidebarRef = useRef();
   const { pathname } = useLocation();
 
@@ -41,10 +41,18 @@ const Sidebar = () => {
     try {
       await logout();
       navigate("/");
-      console.log("You are logged out");
     } catch (e) {
       console.log(e.message);
     }
+  };
+
+  const handleCancelDialog = () => {
+    setShowDialog(false);
+  };
+
+  const handleConfirmDialog = () => {
+    handleLogout();
+    setShowDialog(false);
   };
 
   const Nav_animation = isTabletMid
@@ -94,7 +102,7 @@ const Sidebar = () => {
         variants={Nav_animation}
         initial={{ x: isTabletMid ? -250 : 0 }}
         animate={open ? "open" : "closed"}
-        className=" bg-white text-gray shadow-xl z-[49]  overflow-hidden md:relative fixed h-screen "
+        className="bg-white dark:bg-gray-900 dark:text-white text-gray shadow-xl z-[49]  overflow-hidden md:relative fixed h-screen"
       >
         <div className="flex items-center gap-2.5 font-medium border-b py-3 border-slate-300  mx-3">
           <img
@@ -102,7 +110,7 @@ const Sidebar = () => {
             alt=""
             className={`rounded-full bg-black ${
               open
-                ? "w-[32px] h-[32px] lg:w-[48px] lg:h-[48px]"
+                ? "w-[32px] h-[32px] lg:w-[42px] lg:h-[42px] p-1"
                 : "w-[32px] h-[32px]"
             }`}
           />
@@ -135,11 +143,13 @@ const Sidebar = () => {
             </li>
             <div className="h-[1px] bg-slate-300 w-full my-2"></div>
 
-            <li className="" onClick={handleLogout}>
-              <NavLink to={"/"} className="link">
+            <li className="" onClick={()=> {
+              setShowDialog(true);
+            }}>
+              <div className="link">
                 <FiLogOut size={23} className="min-w-max" />
                 Logout
-              </NavLink>
+              </div>
             </li>
           </ul>
         </div>
@@ -169,6 +179,11 @@ const Sidebar = () => {
       <div className="m-3 md:hidden" onClick={() => setOpen(true)}>
         <MdMenu size={25} />
       </div>
+      {showDialog && 
+      <Dialog
+        onCancel={handleCancelDialog}
+        onConfirm={handleConfirmDialog}
+      />}
     </div>
   );
 };

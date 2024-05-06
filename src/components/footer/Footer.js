@@ -42,7 +42,6 @@ const Footer = () => {
                   onClick={() => {
                     navigate("/zenora");
                   }}
-                  target="_blank"
                   className="cursor-pointer"
                 >
                   Plan your trip
@@ -51,6 +50,7 @@ const Footer = () => {
               <li>
                 <p
                   rel="noopener noreferrer"
+                  className="cursor-pointer"
                   onClick={() => {
                     navigate("/dashboard");
                   }}
@@ -61,6 +61,7 @@ const Footer = () => {
               <li>
                 <p
                   rel="noopener noreferrer"
+                  className="cursor-pointer"
                   onClick={() => {
                     navigate("/dashboard");
                   }}
@@ -110,6 +111,7 @@ const Footer = () => {
               <li>
                 <p
                   rel="noopener noreferrer"
+                  className="cursor-pointer"
                   onClick={() => {
                     navigate("/profile");
                   }}
@@ -120,6 +122,7 @@ const Footer = () => {
               <li>
                 <p
                   rel="noopener noreferrer"
+                  className="cursor-pointer"
                   onClick={() => {
                     navigate("/profile");
                   }}

@@ -27,6 +27,7 @@ import boraBora from "../../assets/bora-bora.jpg";
 import "./TripPlanner.css";
 import DisplayRestaurants from "../../containers/DisplayRestaurants/DisplayRestaurants";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/navbar/NavbarHome";
 
 const TripPlanner = () => {
   const navigate = useNavigate();
@@ -54,7 +55,6 @@ const TripPlanner = () => {
     "RV Park",
     "Shopping Mall",
     "Spa",
-    "Synagogue",
     "Tourist Attraction",
     "Zoo",
   ];
@@ -69,8 +69,7 @@ const TripPlanner = () => {
         "Church",
         "Hindu Temple",
         "Mosque",
-        "Synagogue",
-        "Place of Worship"
+        "Place of Worship",
       ],
     },
     {
@@ -86,7 +85,7 @@ const TripPlanner = () => {
         "Zoo",
         "Park",
         "Tourist Attraction",
-        "Shopping Mall"
+        "Shopping Mall",
       ],
     },
     {
@@ -97,7 +96,7 @@ const TripPlanner = () => {
         "Night Club",
         "Amusement Park",
         "Park",
-        "Tourist Attraction"
+        "Tourist Attraction",
       ],
     },
   ];
@@ -125,6 +124,7 @@ const TripPlanner = () => {
   const [restaurantsError, setRestaurantsError] = useState("");
   const [restaurantsRetryCount, setRestaurantsRetryCount] = useState(0);
   const [featuredPlaces, setFeaturedPlaces] = useState([]);
+  const [range, setRange] = useState(75);
 
   const containerRef = useRef(null);
   const destinationInputRef = useRef(null);
@@ -133,7 +133,6 @@ const TripPlanner = () => {
   const genAI = new GoogleGenerativeAI(
     process.env.REACT_APP_GENERATIVE_AI_API_KEY
   );
-  console.log( process.env.REACT_APP_GENERATIVE_AI_API_KEY);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -266,6 +265,10 @@ const TripPlanner = () => {
     setSelectedFoodPreferences([...selectedFoodPreferences, preference]);
   };
 
+  const handleRangeChange = (event) => {
+    setRange(parseInt(event.target.value));
+  };
+
   const handleFoodPreferenceUnselect = (preference) => {
     setSelectedFoodPreferences(
       foodPreferences.filter(
@@ -315,18 +318,16 @@ const TripPlanner = () => {
   const fetchTripPlan = async () => {
     let favourable_places = relevanttags.toString();
     let food_preferences = selectedFoodPreferences.toString();
-    let featured_place_names = featuredPlaces.map(
-      (place) => {
+    let featured_place_names = featuredPlaces.map((place) => {
       if (place.postOption !== "featuredPlaces") {
         return `${place.placeName} from ${place.Address}`;
       }
-    }
-    );
+    });
     setLoading(true);
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `Imagine you're a seasoned travel advisor specializing in crafting customized trips tailored to individual preferences. Plan a memorable trip for ${selectedTripDays} days to ${selectedTripDestination} with a focus on ${selectedTripStyle} trip style and only the places like ${favourable_places} are allowed within 70km radius. Take into account food preferences, ensuring options for ${food_preferences}. Also, make sure all places for each particular day are nearby to each other and easy to travel. Your goal is to provide detailed recommendations to ensure an enriching and delightful experience for the traveler.
-      Your recommendations should include breakfast, lunch, and dinner venues and at least two tourist spots every day, each accompanied by the rating, average price, a brief one-line description, and the most suitable icon from [faFish, faPaintBrush, faBowlingBall, faCampground, faChurch, faOm, faMosque, faGlassMartiniAlt, faTree, faPlaceOfWorship, faCaravan, faShoppingCart, faSpa, faSynagogue, faLandmark, faPaw, faMuseum, faPlayCircle]. The first day of the trip must contain the places ${featured_place_names}. If ${favourable_places} has a particular religious place, then strictly no other religious place of a different religion is allowed in the whole plan. For example, if a temple is selected, no mosque, church, etc., are allowed. Please return your response in JSON format, and the output must be in the below format only:
+      const prompt = `Imagine you're a seasoned travel advisor specializing in crafting customized trips tailored to individual preferences. Plan a memorable trip for ${selectedTripDays} days to ${selectedTripDestination} with a focus on ${selectedTripStyle} trip style and only the places like ${favourable_places} are allowed within ${range}km radius. Take into account food preferences, ensuring options for ${food_preferences}. Also, make sure all places for each particular day are nearby to each other and easy to travel. Your goal is to provide detailed recommendations to ensure an enriching and delightful experience for the traveler.
+      Your recommendations should include breakfast, lunch, and dinner venues and at least two tourist spots every day, each accompanied by the rating, average price, a brief one-line description, and the most suitable icon from [faFish, faPaintBrush, faBowlingBall, faCampground, faChurch, faOm, faMosque, faGlassMartiniAlt, faTree, faPlaceOfWorship, faCaravan, faShoppingCart, faSpa, faLandmark, faPaw, faMuseum, faPlayCircle]. The first day of the trip must contain the places ${featured_place_names}. If ${favourable_places} has a particular religious place, then strictly no other religious place of a different religion is allowed in the whole plan. For example, if a temple is selected, no mosque, church, etc., are allowed. Please return your response in JSON format, and the output must be in the below format only:
       {
         trip_plan: {
           destination: "Hyderabad, Telangana, India",
@@ -424,19 +425,28 @@ const TripPlanner = () => {
         setRestaurantsRetryCount((prevCount) => prevCount + 1);
         fetchRestaurants();
       } else {
-        setRestaurantsError("Sorry, something went wrong. Data could not be loaded.");
+        setRestaurantsError(
+          "Sorry, something went wrong. Data could not be loaded."
+        );
         setIsResaturantsLoading(false);
       }
     }
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <div>
+      <Navbar/>
         <div className="trip_plan_main content-center">
           <div className="w-11/12 mx-auto text-center sm:text-left">
             <h2 className="text-5xl sm:text-7xl text-primary-400 font-extrabold my-2 shadow-black">
-            <span className="tripplanner-title">Zenora</span> <sub className="text-sm text-white">By MonkeyMonk</sub></h2>
+              <span className="tripplanner-title">Zenora</span>{" "}
+              <sub className="text-sm text-white">By MonkeyMonk</sub>
+            </h2>
             <h4 className="text-xl sm:text-3xl text-white my-2 typewriter"></h4>
           </div>
           <div
@@ -613,15 +623,38 @@ const TripPlanner = () => {
                   />
                 </div>
               )}
-              {expanded && relevanttags &&(
-                <div className="sm:mx-2">
-                  <h5 className="my-2">Food preference</h5>
-                  <Chips
-                    allTags={foodPreferences}
-                    selectedTags={selectedFoodPreferences}
-                    onTagClick={handleFoodPreferenceSelect}
-                    onRemoveTag={handleFoodPreferenceUnselect}
-                  />
+              {expanded && relevanttags && (
+                <div className="flex flex-col md:flex-row md:space-x-20">
+                  <div className="sm:mx-2">
+                    <h5 className="my-2">Food preference</h5>
+                    <Chips
+                      allTags={foodPreferences}
+                      selectedTags={selectedFoodPreferences}
+                      onTagClick={handleFoodPreferenceSelect}
+                      onRemoveTag={handleFoodPreferenceUnselect}
+                    />
+                  </div>
+                  <div>
+                    <h5 className="my-2">Range</h5>
+                    <div className="range-slider">
+                      <input
+                        type="range"
+                        min={50}
+                        max={150}
+                        value={range}
+                        className="slider"
+                        step={25}
+                        onChange={handleRangeChange}
+                      />
+                      <div className="range-values">
+                        <span>50</span>
+                        <span>75</span>
+                        <span>100</span>
+                        <span>125</span>
+                        <span>150</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               <div className="form_submit sm:mx-4">
@@ -651,7 +684,9 @@ const TripPlanner = () => {
           <div></div>
         </div>
         {generatedContent && <DisplayTripPlan tripData={generatedContent} />}
-        {generatedRestaurants && <DisplayRestaurants restaurantsData={generatedRestaurants}/>}
+        {generatedRestaurants && (
+          <DisplayRestaurants restaurantsData={generatedRestaurants} />
+        )}
         {featuredPlaces.length !== 0 && (
           <div className="m-10">
             <div className="text-center">
@@ -661,18 +696,20 @@ const TripPlanner = () => {
               <p>Most trending and popular places around the world</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-screen-xl mx-auto my-2">
-              {featuredPlaces.map((place) => (
-                place.postOption !== "tripPlan" &&
-                <SuggestionCards
-                  key={place.id}
-                  name={place.placeName}
-                  tag={place.placeTag}
-                  link={place.placeLink}
-                  imageurl={place.placeImage}
-                  description={place.placeDescription}
-                  address={place.Address}
-                />
-              ))}
+              {featuredPlaces.map(
+                (place) =>
+                  place.postOption !== "tripPlan" && (
+                    <SuggestionCards
+                      key={place.id}
+                      name={place.placeName}
+                      tag={place.placeTag}
+                      link={place.placeLink}
+                      imageurl={place.placeImage}
+                      description={place.placeDescription}
+                      address={place.Address}
+                    />
+                  )
+              )}
             </div>
           </div>
         )}
@@ -771,9 +808,30 @@ const TripPlanner = () => {
           </div>
         </div>
         <div className="py-6 text-sm text-center dark:text-gray-400">
-        © 2023 MonkeyMonk. All rights reserved.
-      <p className="text-xs mt-1">By using MonkeyMonk, you agree to our <span className="cursor-pointer underline" onClick={() => { navigate("/terms&conditions")}} target="_blank">Terms of Service</span> and <span className="cursor-pointer underline" onClick={() => { navigate("/privacypolicy")}} target="_blank">Privacy Policy</span></p>
-      </div>
+          © 2023 MonkeyMonk. All rights reserved.
+          <p className="text-xs mt-1">
+            By using MonkeyMonk, you agree to our{" "}
+            <span
+              className="cursor-pointer underline"
+              onClick={() => {
+                navigate("/terms&conditions");
+              }}
+              target="_blank"
+            >
+              Terms of Service
+            </span>{" "}
+            and{" "}
+            <span
+              className="cursor-pointer underline"
+              onClick={() => {
+                navigate("/privacypolicy");
+              }}
+              target="_blank"
+            >
+              Privacy Policy
+            </span>
+          </p>
+        </div>
       </div>
     </>
   );

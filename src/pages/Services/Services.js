@@ -35,34 +35,34 @@ const Services = () => {
   let currentLetterIndex = 0;
   let intervalId;
 
-  // useLayoutEffect(() => {
-  //   gsap.registerPlugin(TextPlugin);
+  useLayoutEffect(() => {
+    gsap.registerPlugin(TextPlugin);
 
-  //   const animateText = () => {
-  //     intervalId = setInterval(() => {
-  //       const currentSentence = sentences[currentSentenceIndex];
-  //       const currentText = currentSentence.slice(0, currentLetterIndex);
-  //       gsap.to(textRef.current, {
-  //         duration: 0.05,
-  //         text: currentText,
-  //         ease: "power1.in",
-  //       });
+    const animateText = () => {
+      intervalId = setInterval(() => {
+        const currentSentence = sentences[currentSentenceIndex];
+        const currentText = currentSentence.slice(0, currentLetterIndex);
+        gsap.to(textRef.current, {
+          duration: 0.05,
+          text: currentText,
+          ease: "power1.in",
+        });
 
-  //       currentLetterIndex++;
+        currentLetterIndex++;
 
-  //       if (currentLetterIndex > currentSentence.length) {
-  //         clearInterval(intervalId);
-  //         currentLetterIndex = 0;
-  //         currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
-  //         setTimeout(animateText, 2000); // Delay before starting the next sentence
-  //       }
-  //     }, 70);
-  //   };
+        if (currentLetterIndex > currentSentence.length) {
+          clearInterval(intervalId);
+          currentLetterIndex = 0;
+          currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
+          setTimeout(animateText, 2000); // Delay before starting the next sentence
+        }
+      }, 70);
+    };
 
-  //   animateText();
+    animateText();
 
-  //   return () => clearInterval(intervalId); // Cleanup
-  // }, []);
+    return () => clearInterval(intervalId); // Cleanup
+  }, []);
   return (
     <>
       <div className="py-8 dark:bg-gray-900 dark:text-gray-100 min-h-screen services">

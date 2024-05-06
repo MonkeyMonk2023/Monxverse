@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Footer from "../../components/footer/Footer";
-import Navbar from "../../components/navbar/Navbar";
+import Navbar from "../../components/navbar/NavbarHome";
 
 import { db } from "../../firebase/Firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -12,6 +12,8 @@ const Blogs = () => {
   const [mainBlog, setMainBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -59,12 +61,11 @@ const Blogs = () => {
             <h2 className="text-4xl font-semibold text-gray-800 leading-tight">
               {mainBlog.title}
             </h2>
-            <a
-              href="#"
+            <p
               className="py-2 text-green-700 inline-flex items-center justify-center mb-2"
             >
               {mainBlog.category}
-            </a>
+            </p>
           </div>
 
           <img
@@ -110,9 +111,8 @@ const Blogs = () => {
                 }`}
                 onClick={() => setMainBlog(blog)}
               >
-                <a
+                <p
                   rel="noopener noreferrer"
-                  href="#"
                   aria-label="Te nulla oportere reprimique his dolorum"
                 >
                   <img
@@ -120,20 +120,20 @@ const Blogs = () => {
                     className="object-cover w-full h-52 dark:bg-gray-500"
                     src={blog.image}
                   />
-                </a>
+                </p>
                 <div className="flex flex-col flex-1 p-6">
-                  <a
+                  <p
                     rel="noopener noreferrer"
-                    href="#"
+                    
                     aria-label="Te nulla oportere reprimique his dolorum"
-                  ></a>
-                  <a
+                  ></p>
+                  <p
                     rel="noopener noreferrer"
-                    href="#"
+                    
                     className="text-xs tracking-wider uppercase hover:underline dark:text-violet-600"
                   >
                     {blog.category}
-                  </a>
+                  </p>
                   <h3 className="flex-1 py-2 text-lg font-semibold leading-snug">
                     {blog.title}
                   </h3>
@@ -146,8 +146,31 @@ const Blogs = () => {
           </div>
         </div>
       </section>
-
-      <Footer />
+      <div className="py-6 text-sm text-center dark:text-gray-400">
+          © 2023 MonkeyMonk. All rights reserved.
+          <p className="text-xs mt-1">
+            By using MonkeyMonk, you agree to our{" "}
+            <span
+              className="cursor-pointer underline"
+              onClick={() => {
+                navigate("/terms&conditions");
+              }}
+              target="_blank"
+            >
+              Terms of Service
+            </span>{" "}
+            and{" "}
+            <span
+              className="cursor-pointer underline"
+              onClick={() => {
+                navigate("/privacypolicy");
+              }}
+              target="_blank"
+            >
+              Privacy Policy
+            </span>
+          </p>
+        </div>
     </div>
   );
 };

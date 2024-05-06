@@ -17,7 +17,6 @@ const RecentUser = ({ name, msg, image, date, getMessagesForCount,chatId }) => {
     fetchMessagesCount();
   },[])
 
-  // console.log(newMessages, "ismsg read");
   const messageTime = date
     ? new Date(date.toMillis()).toLocaleTimeString([], {
         hour: "2-digit",

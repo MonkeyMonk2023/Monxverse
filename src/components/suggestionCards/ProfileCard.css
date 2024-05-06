@@ -26,8 +26,7 @@
 }
 
 .bg{
-  background: #8A2387;  /* fallback for old browsers */
+  background: #8A2387;
 background: -webkit-linear-gradient(to bottom, #fcb814, rgb(197, 88, 21));  /* Chrome 10-25, Safari 5.1-6 */
 background: linear-gradient(to bottom, #fcb814, rgb(197, 88, 21)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
 }
