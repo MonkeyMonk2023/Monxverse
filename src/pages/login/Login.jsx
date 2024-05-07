@@ -11,9 +11,6 @@ import { FcGoogle } from "react-icons/fc";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import logo from "../../assets/logo.png";
 
-import gsap from "gsap";
-import TextPlugin from "gsap/TextPlugin";
-
 import "./Login.css";
 
 const Login = () => {
@@ -119,20 +116,14 @@ const Login = () => {
   let intervalId;
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(TextPlugin);
-  
     const animateText = () => {
       intervalId = setInterval(() => {
         const currentSentence = sentences[currentSentenceIndex];
         const currentText = currentSentence.slice(0, currentLetterIndex);
-        gsap.to(textRef.current, {
-          duration: 0.05,
-          text: currentText,
-          ease: "power1.in",
-        });
-  
+        textRef.current.textContent = currentText;
+
         currentLetterIndex++;
-  
+
         if (currentLetterIndex > currentSentence.length) {
           clearInterval(intervalId);
           currentLetterIndex = 0;
@@ -141,14 +132,11 @@ const Login = () => {
         }
       }, 70);
     };
-  
-    if (textRef.current) {
-      animateText();
-    }
-  
+
+    animateText();
+
     return () => clearInterval(intervalId);
   }, []);
-  
 
   return (
     <>

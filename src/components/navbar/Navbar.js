@@ -1,32 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import logo from "../../assets/logo.png";
-import gsap from "gsap";
 
 const Navbar = () => {
   const navItemRef = useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("home");
-
-  useLayoutEffect(() => {
-    const t1 = gsap.timeline();
-    t1.fromTo(
-      navItemRef.current,
-      {
-        y: -50,
-        opacity: 0,
-        ease: "power4.out",
-        delay: 1,
-        duration: 10,
-        stagger: {
-          amount: 0.4,
-        },
-      },
-      {
-        y: 0,
-        opacity: 1,
-      }
-    );
-  }, []);
 
   const handleNavItemClick = (sectionId) => {
     const section = document.getElementById(sectionId);
@@ -135,8 +113,8 @@ const Navbar = () => {
               <li>
                 <p
                   className={`nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white ${
-                  activeItem === "home" ? "bg-primary-400" : ""
-                }`}
+                    activeItem === "home" ? "bg-primary-400" : ""
+                  }`}
                   onClick={() => handleNavItemClick("home")}
                 >
                   Home
@@ -145,8 +123,8 @@ const Navbar = () => {
               <li>
                 <p
                   className={`nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white ${
-                  activeItem === "about" ? "bg-primary-400" : ""
-                }`}
+                    activeItem === "about" ? "bg-primary-400" : ""
+                  }`}
                   onClick={() => handleNavItemClick("about")}
                 >
                   About
@@ -155,8 +133,8 @@ const Navbar = () => {
               <li>
                 <p
                   className={`nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white ${
-                  activeItem === "services" ? "bg-primary-400" : ""
-                }`}
+                    activeItem === "services" ? "bg-primary-400" : ""
+                  }`}
                   onClick={() => handleNavItemClick("services")}
                 >
                   Services
@@ -165,8 +143,8 @@ const Navbar = () => {
               <li>
                 <p
                   className={`nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white ${
-                  activeItem === "contact" ? "bg-primary-400" : ""
-                }`}
+                    activeItem === "contact" ? "bg-primary-400" : ""
+                  }`}
                   onClick={() => handleNavItemClick("contact")}
                 >
                   Contact
@@ -175,8 +153,8 @@ const Navbar = () => {
               <li>
                 <p
                   className={`nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white ${
-                  activeItem === "blogs" ? "bg-primary-400" : ""
-                }`}
+                    activeItem === "blogs" ? "bg-primary-400" : ""
+                  }`}
                   onClick={() => handleNavItemClick("blogs")}
                 >
                   Blog

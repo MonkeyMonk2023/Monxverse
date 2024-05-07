@@ -317,7 +317,7 @@ const Profile = () => {
                     </div>
                     <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
-                        for="toggle"
+                        htmlFor="toggle"
                         className=" flex-1 text-gray-800 font-semibold"
                       >
                         show phone number
@@ -331,7 +331,7 @@ const Profile = () => {
                           className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                         />
                         <label
-                          for="toggle"
+                          htmlFor="toggle"
                           className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
                           onClick={() =>
                             setProfileData({
@@ -433,7 +433,7 @@ const Profile = () => {
                     </div>
                     <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
-                        for="password"
+                        htmlFor="password"
                         className="flex-1 text-gray-800 font-semibold"
                       >
                         Current password
@@ -452,7 +452,7 @@ const Profile = () => {
                     </div>
                     <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
-                        for="newPassword"
+                        htmlFor="newPassword"
                         className="flex-1 text-gray-800 font-semibold"
                       >
                         New password
@@ -471,7 +471,7 @@ const Profile = () => {
                     </div>
                     <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
-                        for="confirmedPassword"
+                        htmlFor="confirmedPassword"
                         className="flex-1 text-gray-800 font-semibold"
                       >
                         Confirm new password

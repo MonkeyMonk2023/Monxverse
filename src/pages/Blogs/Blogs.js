@@ -81,10 +81,10 @@ const Blogs = () => {
             {contentParagraphs}
           </div>
         </div>
-        <div className="flex justify-between">
-          <div className="flex">
+        <div className="">
+          <div className="flex flex-wrap space-x-2">
           {mainBlog.tags.map((tag)=>(
-            <p className="mr-1 bg-primary-200 py-1 px-3 rounded-2xl">{tag}</p>
+            <p className="mx-1 bg-primary-200 py-1 my-1 px-3 rounded-2xl">{tag}</p>
           ))}
           </div>
           <div>

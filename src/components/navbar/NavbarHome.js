@@ -18,11 +18,11 @@ const Navbar = () => {
           </span>
         </p>
         <p
-                className="nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white bg-primary-400"
-                onClick={() => navigate("/")}
-              >
-                Home
-              </p>
+          className="nav-item block py-2 px-3 rounded hover:cursor-pointer dark:text-white bg-primary-400"
+          onClick={() => navigate("/")}
+        >
+          Home
+        </p>
       </div>
     </nav>
   );

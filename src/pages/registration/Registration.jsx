@@ -15,9 +15,6 @@ import { FcGoogle } from "react-icons/fc";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import logo from "../../assets/logo.png";
 
-import gsap from "gsap";
-import TextPlugin from "gsap/TextPlugin";
-
 const Registration = () => {
   const navigate = useNavigate();
 
@@ -201,7 +198,7 @@ const Registration = () => {
     }
   };
 
-  const textRef = useRef(null);
+  const textRef = useRef("");
 
   const sentences = [
     "To Travel is to Live !",
@@ -215,17 +212,11 @@ const Registration = () => {
   let intervalId;
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(TextPlugin);
-
     const animateText = () => {
       intervalId = setInterval(() => {
         const currentSentence = sentences[currentSentenceIndex];
         const currentText = currentSentence.slice(0, currentLetterIndex);
-        gsap.to(textRef.current, {
-          duration: 0.05,
-          text: currentText,
-          ease: "power1.in",
-        });
+        textRef.current.textContent = currentText;
 
         currentLetterIndex++;
 
@@ -242,6 +233,7 @@ const Registration = () => {
 
     return () => clearInterval(intervalId);
   }, []);
+  
   return (
     <div className="min-h-screen bg-white text-gray-900 flex justify-center items-center">
       <div className=" max-w-screen-xl m-0 sm:m-20 shadow-none lg:shadow-xl sm:rounded-lg flex justify-center flex-1 flex-row-reverse">
@@ -397,7 +389,7 @@ const Registration = () => {
           <div className="auth-bg w-3/4 flex justify-center items-center p-4 text-center min-h-32">
             <h3
               className="text-xl md:text-4xl font-bold text-white"
-              ref={textRef}> </h3>
+              ref={textRef}>hey</h3>
           </div>
         </div>
       </div>

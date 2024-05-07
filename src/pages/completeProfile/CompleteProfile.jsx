@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { updateProfile } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../../firebase/Firebase";
-import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
 
 import {
   doc,
@@ -17,6 +15,7 @@ import { UserAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
+import OTPdialog from "../../components/OTPdialog/OTPdialog";
 
 const CompleteProfile = () => {
   const defaultProfileImage =
@@ -45,6 +44,13 @@ const CompleteProfile = () => {
   });
 
   const [userData, setUserData] = useState(null);
+  const [showOTPdialog, setShowOTPdialog] = useState(false);
+  const [mobileVerificationStatus, setMobileVerificationStatus] = useState(false);
+
+  const handleMobileVerificationStatus = (status) => {
+    setMobileVerificationStatus(status);
+    showOTPdialog(false);
+  };
 
   const [errors, setErrors] = useState({
     username: "",
@@ -230,51 +236,8 @@ const CompleteProfile = () => {
   }, [currentUser]);
 
   const [otp, setOtp] = useState("");
-  const [verificationId, setVerificationId] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const handleSendOTP = async () => {
-    try {
-      setLoading(true);
-      const appVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
-      const verificationResult = await signInWithPhoneNumber(
-        auth,
-        profileData.phoneNumber,
-        appVerifier
-      );
-      setVerificationId(verificationResult.verificationId);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(error.message);
-    }
-  };
-
-  // const handleVerifyOTP = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const credential = auth.PhoneAuthProvider.credential(verificationId, otp);
-  //     console.log(verificationId,"first");
-  //     await auth.currentUser.updatePhoneNumber(credential);
-  //     console.log(verificationId,"second");
-  //     setLoading(false);
-  //     console.log("Phone number added to profile:", profileData.phoneNumber);
-  //   } catch (error) {
-  //     setLoading(false);
-  //     setError(error.message);
-  //   }
-  // };
-
-  const handleVerifyOTP = async ( ) => {
-    try {
-      const confirmationResult = await auth.currentUser.confirmationResult(verificationId);
-      await confirmationResult.confirm(otp);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center">
@@ -410,57 +373,20 @@ const CompleteProfile = () => {
                   value={profileData.phoneNumber}
                   defaultCountry="IN"
                   onChange={handlePhoneChange}
+                  disabled={mobileVerificationStatus}
                 />
               </div>
               {errors.phoneNumber && (
                 <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
               )}
-              <button
+              {!mobileVerificationStatus && <button
                 type="button"
                 className="mt-4 bg-blue-500 text-white p-2 rounded"
-                onClick={handleSendOTP}
+                onClick={() => setShowOTPdialog(true)}
                 disabled={loading}
               >
-                {loading ? <div className="animate-spin" /> : "Send OTP"}
-              </button>
-            </div>
-            <div>
-              <div id="recaptcha-container"></div>
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={handleVerifyOTP}
-                disabled={loading}
-              >
-                {loading ? <div className="animate-spin" /> : "Verify OTP"}
-              </button>
-            </div>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-
-            <div>
-              <label
-                htmlFor="bio"
-                className="mt-4 text-sm font-medium text-gray-500"
-              >
-                Bio
-              </label>
-              <textarea
-                name="bio"
-                value={profileData.bio}
-                onChange={handleProfileChange}
-                placeholder="Tell us about yourself"
-                rows={4}
-                maxLength={200}
-                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-              ></textarea>
-              {errors.bio && (
-                <p className="text-red-500 text-sm">{errors.bio}</p>
-              )}
+                Send OTP
+              </button>}
             </div>
           </div>
           <div className="col-2 lg:w-1/2 w-full p-6 lg:mt-64 lg:relative space-y-4">
@@ -565,6 +491,7 @@ const CompleteProfile = () => {
           </div>
         </form>
       </div>
+      {showOTPdialog && <OTPdialog phoneNumber={profileData.phoneNumber} onVerificationStatus={handleMobileVerificationStatus} />}
     </div>
   );
 };

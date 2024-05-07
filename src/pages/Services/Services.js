@@ -1,8 +1,5 @@
 import React, { useLayoutEffect, useRef } from "react";
 
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import TextPlugin from "gsap/TextPlugin";
 import { useNavigate } from "react-router-dom";
 
 const Services = () => {
@@ -36,17 +33,11 @@ const Services = () => {
   let intervalId;
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(TextPlugin);
-
     const animateText = () => {
       intervalId = setInterval(() => {
         const currentSentence = sentences[currentSentenceIndex];
         const currentText = currentSentence.slice(0, currentLetterIndex);
-        gsap.to(textRef.current, {
-          duration: 0.05,
-          text: currentText,
-          ease: "power1.in",
-        });
+        textRef.current.textContent = currentText;
 
         currentLetterIndex++;
 
@@ -54,15 +45,16 @@ const Services = () => {
           clearInterval(intervalId);
           currentLetterIndex = 0;
           currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
-          setTimeout(animateText, 2000); // Delay before starting the next sentence
+          setTimeout(animateText, 2000);
         }
       }, 70);
     };
 
     animateText();
 
-    return () => clearInterval(intervalId); // Cleanup
+    return () => clearInterval(intervalId);
   }, []);
+
   return (
     <>
       <div className="py-8 dark:bg-gray-900 dark:text-gray-100 min-h-screen services">
