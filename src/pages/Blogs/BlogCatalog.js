@@ -45,14 +45,14 @@ const BlogCatalog = () => {
           Blogs
         </h2>
       </div>
-      <div className="container grid grid-cols-12 mx-auto gap-y-6 md:gap-6">
-        <div className="mx-auto max-w-xl flex col-span-12 md:col-span-7 lg:col-span-7 py-4">
+      <div className="container flex flex-col md:flex-row mx-auto gap-y-6 md:gap-6">
+        <div className="py-4 md:w-7/12 ">
           <div className="bg-white rounded-lg mb-6 tracking-wide">
             <div className="md:flex-shrink-0">
               <img
                 src={blogs[0]?.image}
                 alt="mountains"
-                className="w-full h-64 rounded-lg rounded-b-none object-cover"
+                className="w-full h-64 xl:h-80 rounded-lg object-cover"
               />
             </div>
             <div className="px-4 py-2 mt-2 space-y-3">
@@ -74,7 +74,7 @@ const BlogCatalog = () => {
             </div>
           </div>
         </div>
-        <div className="py-2 lg:col-span-5 lg:block col-span-12 md:col-span-5">
+        <div className="py-4 md:w-5/12">
           <div className="mb-4 space-x-5 border-b-2 border-primary-400">
             <p className="pb-3 text-xs font-bold uppercase dark:border-violet-400">
               Latest
@@ -83,7 +83,7 @@ const BlogCatalog = () => {
       <div className="flex flex-col divide-y dark:divide-gray-700">
         {blogs?.slice(1, 6).map((blog) => (
           <div key={blog.id} className="flex px-1 py-4">
-            <div className="mr-4 w-2/6 h-20">
+            <div className="mr-4 w-2/6 h-20 xl:h-24">
               <img
                 alt=""
                 className="w-full h-full object-cover"

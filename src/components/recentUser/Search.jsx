@@ -110,7 +110,6 @@ const Search = () => {
         });
       }
     } catch (err) {
-      console.log(err);
     }
 
     setUser(null);

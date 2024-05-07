@@ -92,7 +92,7 @@ const Dashboard = () => {
         <div className="mb-24">
           <div className="banner-img h-72 pb-20 py-2 bg-primary-300 flex flex-col justify-between px-4 rounded-xl">
             <div className=" p-3 md:p-4 bg-white  max-w-[60rem] mx-auto rounded-2xl w-full flex flex-col sm:flex-row items-center justify-center my-10">
-              <div className="w-full sm:py-2 md:mx-2 ">
+              <div className="w-full sm:py-2 md:mx-2">
                 <div className="relative my-2">
                   <input
                     type="text"
@@ -116,7 +116,7 @@ const Dashboard = () => {
                   />
                 </div>
               </div>
-              <div className="w-full sm:py-2 mx-2">
+              <div className="w-full sm:py-2 md:mx-2">
                 <div className="relative my-2">
                   <input
                     type="text"

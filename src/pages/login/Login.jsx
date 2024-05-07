@@ -5,11 +5,16 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   sendPasswordResetEmail,
+  signOut,
 } from "firebase/auth";
-import { auth } from "../../firebase/Firebase";
+import { auth, db } from "../../firebase/Firebase";
 import { FcGoogle } from "react-icons/fc";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import logo from "../../assets/logo.png";
+import { collection, getDocs, query, where } from "firebase/firestore";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import "./Login.css";
 
@@ -21,8 +26,6 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // State for the email address for password reset
-  const [resetEmail, setResetEmail] = useState("asmashaheen.shah@gmail.com");
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
   const validateForm = () => {
@@ -43,10 +46,26 @@ const Login = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", user.email));
+    const querySnapshot = await getDocs(q);
+    const userExists = !querySnapshot.empty;
+    if (userExists) {
       navigate("/dashboard");
+    } else {
+      showToastMessage("User doesn't exist please register")
+      await signOut(auth);
+    }
     } catch (error) {
       console.error("Error signing in with Google:", error.message);
     }
+  };
+
+  const showToastMessage = (toastMessage) => {
+    toast.error(toastMessage, {
+      position: "bottom-right",
+    });
   };
 
   const handleSubmit = async (evt) => {
@@ -62,6 +81,9 @@ const Login = () => {
         const user = userCredential.user;
         if (user) {
           navigate("/completeProfile");
+        }
+        else{
+          navigate("/register")
         }
         setErrors({});
       }
@@ -93,7 +115,6 @@ const Login = () => {
     }
     else{
     }
-    
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -115,15 +136,18 @@ const Login = () => {
   let currentLetterIndex = 0;
   let intervalId;
 
+  
   useLayoutEffect(() => {
     const animateText = () => {
       intervalId = setInterval(() => {
         const currentSentence = sentences[currentSentenceIndex];
         const currentText = currentSentence.slice(0, currentLetterIndex);
-        textRef.current.textContent = currentText;
-
+        if (textRef.current) {
+          textRef.current.textContent = currentText;
+        }
+  
         currentLetterIndex++;
-
+  
         if (currentLetterIndex > currentSentence.length) {
           clearInterval(intervalId);
           currentLetterIndex = 0;
@@ -132,11 +156,11 @@ const Login = () => {
         }
       }, 70);
     };
-
+  
     animateText();
-
+  
     return () => clearInterval(intervalId);
-  }, []);
+  }, [textRef.current]);
 
   return (
     <>
@@ -275,6 +299,7 @@ const Login = () => {
             > </h3>
           </div>
           </div>
+          <ToastContainer />
         </div>
       </div>
     </>

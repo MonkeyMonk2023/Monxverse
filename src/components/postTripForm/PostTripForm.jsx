@@ -2,7 +2,6 @@ import Button from "./Button";
 import { useState, useEffect, useRef } from "react";
 import { db } from "../../firebase/Firebase";
 import { UserAuth } from "../../context/authContext";
-// import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   doc,
@@ -15,6 +14,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import map from "../../assets/map.png";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function PostTripForm({ closeModal }) {
   const { user } = UserAuth();
@@ -185,6 +187,12 @@ function PostTripForm({ closeModal }) {
   const [date, setDate] = useState(new Date());
   const [tripDesc, setTripDesc] = useState("");
 
+  const showToastMessage = (toastMessage) => {
+    toast.success(toastMessage, {
+      position: "bottom-right",
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -230,7 +238,7 @@ function PostTripForm({ closeModal }) {
         username:completeUserData.username
       };
       await addDoc(collection(db, "trips"), tripData);
-      alert("Trip details added successfully!");
+      showToastMessage("Trip details added successfully!")
       window.location.reload();
       setFrom("");
       setTo("");
@@ -478,6 +486,7 @@ function PostTripForm({ closeModal }) {
                     </div>
                   </div>
                   {/* </form> */}
+                  <ToastContainer />
                 </div>
               </div>
             </div>

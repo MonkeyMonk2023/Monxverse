@@ -104,7 +104,6 @@ const Chat = () => {
 
       uploadTask.on(
         (error) => {
-          console.log(error);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
@@ -212,7 +211,6 @@ const Chat = () => {
                   ?.sort((a, b) => b[1].date - a[1].date)
                   .map( (chat) => {
                     const chatId = chat[0];
-                    // const newMessagesPromise = getMessagesForCount(chatId);
                     return (
                       <div
                         className={`userChat my-2 rounded-lg hover:bg-stone-300 ${
@@ -223,7 +221,6 @@ const Chat = () => {
                         key={chat[1].userInfo.userId}
                         onClick={() => handleSelect(chat[1].userInfo)}
                       >
-                        {/* Render chat information */}
                         <RecentUser
                           key={chat[1].id}
                           name={chat[1]?.userInfo.username}

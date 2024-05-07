@@ -12,7 +12,6 @@ const ProfileCard = ({ user, id }) => {
 
   useEffect(() => {
     const fetchCompleteUserDetails = async () => {
-      console.log(user.userId);
       try {
         const userDocRef = doc(db, "users", id);
         const userDocSnap = await getDoc(userDocRef);

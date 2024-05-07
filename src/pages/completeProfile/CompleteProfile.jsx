@@ -17,6 +17,9 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import OTPdialog from "../../components/OTPdialog/OTPdialog";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const CompleteProfile = () => {
   const defaultProfileImage =
     "https://firebasestorage.googleapis.com/v0/b/monkeymonk-8d654.appspot.com/o/profileImages%2Fdefault_user.jpg?alt=media&token=fd3200cf-e81e-4b27-8528-7307df8d99ab";
@@ -49,7 +52,7 @@ const CompleteProfile = () => {
 
   const handleMobileVerificationStatus = (status) => {
     setMobileVerificationStatus(status);
-    showOTPdialog(false);
+    setShowOTPdialog(false);
   };
 
   const [errors, setErrors] = useState({
@@ -116,8 +119,11 @@ const CompleteProfile = () => {
       }
   }
 
-
-
+  const showToastMessage = (toastMessage) => {
+    toast.success(toastMessage, {
+      position: "bottom-right",
+    });
+  };
 
   const submitUserProfile = async (e) => {
     e.preventDefault();
@@ -180,7 +186,7 @@ const CompleteProfile = () => {
 
       const userDocRef = doc(db, "users", currentUser.uid);
       await updateDoc(userDocRef, updatedUserData);
-      alert("User data updated successfully.");
+      showToastMessage("Profile updated successfully.")
       setProfileData({});
       navigate("/dashboard");
     } catch (error) {
@@ -305,7 +311,7 @@ const CompleteProfile = () => {
                 htmlFor="username"
                 className="mt-4 text-sm font-medium text-gray-500"
               >
-                Username
+                Username <span className="text-sm text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -325,7 +331,7 @@ const CompleteProfile = () => {
                 htmlFor="firstName"
                 className="mt-4 text-sm font-medium text-gray-500"
               >
-                First Name
+                First Name <span className="text-sm text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -344,7 +350,7 @@ const CompleteProfile = () => {
                 htmlFor="lastName"
                 className="mt-4 text-sm font-medium text-gray-500"
               >
-                Last Name
+                Last Name <span className="text-sm text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -363,7 +369,7 @@ const CompleteProfile = () => {
                 htmlFor="mobileNumber"
                 className="mt-4 text-sm font-medium text-gray-500"
               >
-                Mobile Number*
+                Mobile Number <span className="text-sm text-red-500">*</span>
               </label>
               <div className="w-full my-4 sm:my-0">
                 <PhoneInput
@@ -415,7 +421,7 @@ const CompleteProfile = () => {
                 htmlFor="gender"
                 className=" text-sm font-medium text-gray-500"
               >
-                Gender
+                Gender <span className="text-sm text-red-500">*</span>
               </label>
               <select
                 name="gender"
@@ -437,7 +443,7 @@ const CompleteProfile = () => {
                 htmlFor="DOB"
                 className="mt-4 text-sm font-medium text-gray-500"
               >
-                Date of Birth
+                Date of Birth <span className="text-sm text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -500,7 +506,7 @@ const CompleteProfile = () => {
                 className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
               />
             </div>
-            <div className="lg:absolute lg:bottom-0 lg:right-6">
+            <div className="">
               <button
                 type="submit"
                 className="mt-8 bg-blue-500 text-white py-4 px-8 rounded-lg font-medium hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
@@ -511,6 +517,7 @@ const CompleteProfile = () => {
           </div>
         </form>
       </div>
+      <ToastContainer />
       {showOTPdialog && <OTPdialog phoneNumber={profileData.phoneNumber} onVerificationStatus={handleMobileVerificationStatus} />}
     </div>
   );

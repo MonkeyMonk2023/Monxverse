@@ -147,7 +147,6 @@ const Profile = () => {
       const deletePromises = querySnapshot.docs.map(async (doc) => {
         await deleteDoc(doc.ref);
       });
-
       await Promise.all(deletePromises);
       await deleteUser(auth.currentUser);
       await deleteDoc(doc(db, "users", currentUser.uid));

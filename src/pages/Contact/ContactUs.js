@@ -24,7 +24,6 @@ const ContactUs = () => {
           showToast();
         },
         (error) => {
-          console.log(error.text);
         }
       );
   };

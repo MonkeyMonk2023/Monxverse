@@ -32,15 +32,18 @@ const Services = () => {
   let currentLetterIndex = 0;
   let intervalId;
 
+  
   useLayoutEffect(() => {
     const animateText = () => {
       intervalId = setInterval(() => {
         const currentSentence = sentences[currentSentenceIndex];
         const currentText = currentSentence.slice(0, currentLetterIndex);
-        textRef.current.textContent = currentText;
-
+        if (textRef.current) {
+          textRef.current.textContent = currentText;
+        }
+  
         currentLetterIndex++;
-
+  
         if (currentLetterIndex > currentSentence.length) {
           clearInterval(intervalId);
           currentLetterIndex = 0;
@@ -49,11 +52,11 @@ const Services = () => {
         }
       }, 70);
     };
-
+  
     animateText();
-
+  
     return () => clearInterval(intervalId);
-  }, []);
+  }, [textRef.current]);
 
   return (
     <>

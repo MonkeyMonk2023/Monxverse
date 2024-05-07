@@ -15,6 +15,9 @@ import { FcGoogle } from "react-icons/fc";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import logo from "../../assets/logo.png";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Registration = () => {
   const navigate = useNavigate();
 
@@ -44,6 +47,7 @@ const Registration = () => {
   });
 
   const [signupError, setSignupError] = useState("");
+  const [signupGoogleError, setSignupGoogleError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -75,9 +79,7 @@ const Registration = () => {
       );
       const user = userCredential.user;
       await sendEmailVerification(user);
-      alert(
-        "Registration successful. Please check your email for verification."
-      );
+      showToastMessage("Registration successful. Please check your email for verification.");
       return user;
     } catch (error) {
       console.error("Error signing up user:", error.message);
@@ -191,11 +193,17 @@ const Registration = () => {
       await setDoc(userDocRef, userData);
 
       await setDoc(doc(db, "userChats", user.uid), {});
-      alert("User signed up with Google successfully!");
+      showToastMessage("Registration with Google successfully!");
       navigate("/completeProfile");
     } catch (error) {
       console.error("Error signing up with Google:", error.message);
     }
+  };
+
+  const showToastMessage = (toastMessage) => {
+    toast.success(toastMessage, {
+      position: "bottom-right",
+    });
   };
 
   const textRef = useRef("");
@@ -216,7 +224,9 @@ const Registration = () => {
       intervalId = setInterval(() => {
         const currentSentence = sentences[currentSentenceIndex];
         const currentText = currentSentence.slice(0, currentLetterIndex);
-        textRef.current.textContent = currentText;
+        if (textRef.current) {
+          textRef.current.textContent = currentText;
+        }
 
         currentLetterIndex++;
 
@@ -232,8 +242,8 @@ const Registration = () => {
     animateText();
 
     return () => clearInterval(intervalId);
-  }, []);
-  
+  }, [textRef.current]);
+
   return (
     <div className="min-h-screen bg-white text-gray-900 flex justify-center items-center">
       <div className=" max-w-screen-xl m-0 sm:m-20 shadow-none lg:shadow-xl sm:rounded-lg flex justify-center flex-1 flex-row-reverse">
@@ -332,7 +342,15 @@ const Registration = () => {
               </div>
               <div
                 className="flex flex-col items-center"
-                onClick={signUpWithGoogle}
+                onClick={() => {
+                  if (!termsAccepted) {
+                    setSignupGoogleError(
+                      "Please accept the terms and conditions to sign up."
+                    );
+                  } else {
+                    signUpWithGoogle();
+                  }
+                }}
               >
                 <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-primary-200 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                   <div className="bg-white p-2 rounded-full">
@@ -340,37 +358,44 @@ const Registration = () => {
                   </div>
                   <span className="ml-4">Sign Up with Google</span>
                 </button>
+                {signupGoogleError && (
+                  <span className="text-red-500">{signupGoogleError}</span>
+                )}
               </div>
               <div className="flex  justify-center my-4 ">
-                  <input
-                    id="checkbox-1"
-                    aria-describedby="checkbox-1"
-                    type="checkbox"
-                    className="bg-gray-50 mt-1 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded"
-                    checked={termsAccepted}
-                    onChange={handleCheckboxChange}
-                    required
-                  />
-                  <label
-                    htmlFor="checkbox-1"
-                    className="text-sm ml-3 font-medium text-gray-900"
-                  >
-                    I agree to the 
-                    <span className="text-blue-600 hover:underline ml-1 cursor-pointer" 
+                <input
+                  id="checkbox-1"
+                  aria-describedby="checkbox-1"
+                  type="checkbox"
+                  className="bg-gray-50 mt-1 border-gray-300 focus:ring-3 focus:ring-blue-300 h-4 w-4 rounded"
+                  checked={termsAccepted}
+                  onChange={handleCheckboxChange}
+                  required
+                />
+                <label
+                  htmlFor="checkbox-1"
+                  className="text-sm ml-3 font-medium text-gray-900"
+                >
+                  I agree to the
+                  <span
+                    className="text-blue-600 hover:underline ml-1 cursor-pointer"
                     onClick={() => {
                       navigate("/terms&conditions");
-                    }}>
-                       terms of service
-                    </span>{" "}
-                    and
-                    <p className="text-blue-600 hover:underline cursor-pointer"
+                    }}
+                  >
+                    terms of service
+                  </span>{" "}
+                  and
+                  <p
+                    className="text-blue-600 hover:underline cursor-pointer"
                     onClick={() => {
                       navigate("/privacypolicy");
-                    }}>
-                      privacy policy
-                    </p>
-                  </label>
-                </div>
+                    }}
+                  >
+                    privacy policy
+                  </p>
+                </label>
+              </div>
               <div className="my-12  text-center">
                 <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
                   Already have an account?
@@ -389,9 +414,13 @@ const Registration = () => {
           <div className="auth-bg w-3/4 flex justify-center items-center p-4 text-center min-h-32">
             <h3
               className="text-xl md:text-4xl font-bold text-white"
-              ref={textRef}>hey</h3>
+              ref={textRef}
+            >
+              hey
+            </h3>
           </div>
         </div>
+        <ToastContainer />
       </div>
     </div>
   );
