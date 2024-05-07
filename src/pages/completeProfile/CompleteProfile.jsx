@@ -388,6 +388,26 @@ const CompleteProfile = () => {
                 Send OTP
               </button>}
             </div>
+            <div>
+              <label
+                htmlFor="bio"
+                className="mt-4 text-sm font-medium text-gray-500"
+              >
+                Bio
+              </label>
+              <textarea
+                name="bio"
+                value={profileData.bio}
+                onChange={handleProfileChange}
+                placeholder="Tell us about yourself"
+                rows={4}
+                maxLength={200}
+                className="mt-1 w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+              ></textarea>
+              {errors.bio && (
+                <p className="text-red-500 text-sm">{errors.bio}</p>
+              )}
+              </div>
           </div>
           <div className="col-2 lg:w-1/2 w-full p-6 lg:mt-64 lg:relative space-y-4">
             <div>

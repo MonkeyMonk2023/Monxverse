@@ -257,7 +257,7 @@ const Chat = () => {
           {selectedChat && (
             <>
               <div className="user-full-chat h-full flex flex-col  relative">
-                <div className="w-full h-20 p-4 bg-white shadow-lg flex justify-between items-center ">
+                <div className="w-full h-16 p-4 bg-white shadow-lg flex justify-between items-center ">
                   <div className="flex items-center ">
                     <div>
                       <button
