@@ -1,9 +1,13 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import logo from "../../assets/logo.png";
+import logoDark from "../../assets/logo.png";
+import logoLight from "../../assets/logo_light.png"
 import { useNavigate } from "react-router-dom";
+import { useMediaQuery } from "@react-hook/media-query";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const logo = prefersDarkMode ? logoDark : logoLight;
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 sticky top-0 z-20">
       <div className="max-w-screen-xl flex justify-between items-center mx-auto py-4 px-10">

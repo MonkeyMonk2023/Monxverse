@@ -1,10 +1,14 @@
 import React, { useRef, useState } from "react";
-import logo from "../../assets/logo.png";
+import logoDark from "../../assets/logo.png";
+import logoLight from "../../assets/logo_light.png"
+import { useMediaQuery } from "@react-hook/media-query";
 
 const Navbar = () => {
   const navItemRef = useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("home");
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const logo = prefersDarkMode ? logoDark : logoLight;
 
   const handleNavItemClick = (sectionId) => {
     const section = document.getElementById(sectionId);

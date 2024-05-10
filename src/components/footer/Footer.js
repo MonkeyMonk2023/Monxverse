@@ -2,8 +2,13 @@ import React from "react";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import "./Footer.css";
+import logoDark from "../../assets/logo.png";
+import logoLight from "../../assets/logo_light.png"
+import { useMediaQuery } from "@react-hook/media-query";
 
 const Footer = () => {
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const logo = prefersDarkMode ? logoDark : logoLight;
   const handleNavItemClick = (sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) {

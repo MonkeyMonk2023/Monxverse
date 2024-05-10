@@ -127,7 +127,12 @@ const CompleteProfile = () => {
 
   const submitUserProfile = async (e) => {
     e.preventDefault();
-
+    if (!mobileVerificationStatus) {
+      toast.error("Please verify your phone number before submitting.", {
+        position: "bottom-right",
+      });
+      return;
+    }
     const newErrors = {};
     Object.keys(profileData).forEach((key) => {
       if (

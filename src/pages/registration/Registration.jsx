@@ -54,6 +54,10 @@ const Registration = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleCheckboxChange = () => {
+    if(!termsAccepted){
+      setSignupError("");
+      setSignupGoogleError("");
+    }
     setTermsAccepted(!termsAccepted);
   };
 
@@ -332,7 +336,7 @@ const Registration = () => {
                   <span className="ml-3">Sign Up</span>
                 </button>
                 {signupError && (
-                  <span className="text-red-500">{signupError}</span>
+                  <span className="text-red-500 w-3/4">{signupError}</span>
                 )}
               </form>
               <div className="my-12 border-b text-center">
@@ -359,7 +363,7 @@ const Registration = () => {
                   <span className="ml-4">Sign Up with Google</span>
                 </button>
                 {signupGoogleError && (
-                  <span className="text-red-500">{signupGoogleError}</span>
+                  <span className="text-red-500 w-full max-w-xs">{signupGoogleError}</span>
                 )}
               </div>
               <div className="flex  justify-center my-4 ">

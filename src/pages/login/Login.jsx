@@ -46,7 +46,6 @@ const Login = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
       const usersRef = collection(db, "users");
     const q = query(usersRef, where("email", "==", user.email));
     const querySnapshot = await getDocs(q);
@@ -114,6 +113,12 @@ const Login = () => {
       }
     }
     else{
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const newErrors = {};
+      if (!email.trim() || !emailRegex.test(email)) {
+        newErrors.email = "Invalid email address";
+        setErrors(newErrors);
+      }
     }
   };
 
