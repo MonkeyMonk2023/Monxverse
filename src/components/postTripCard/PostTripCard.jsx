@@ -114,12 +114,8 @@ const PostTripCard = ({ trip }) => {
             <h2 className="text-xl font-semibold">{trip.from}</h2>
           </div>
           <div className=" mx-5 w-full h-[1px] relative flex justify-center items-center border-dashed border border-slate-300">
-            <FontAwesomeIcon
-              icon={faPlane}
-              className="text-primary-400"
-              size="2xl"
-            />
-            <div className="absolute"></div>
+                To
+            {/* <div className="absolute"></div> */}
           </div>
           <div>
             <h2 className="text-xl font-semibold">{trip.to}</h2>

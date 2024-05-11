@@ -234,7 +234,7 @@ const CompleteProfile = () => {
               navigate("/dashboard");
             }
             else{
-              navigate("/verifyUser") 
+              navigate("/verifyEmail") 
             }
           }
         }

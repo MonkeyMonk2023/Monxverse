@@ -24,7 +24,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 sticky top-0 z-20">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-4 px-10">
+      <div className=" flex flex-wrap items-center justify-between mx-auto py-4 px-10">
         <p href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img
             src={logo}

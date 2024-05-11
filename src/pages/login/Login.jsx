@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   sendPasswordResetEmail,
   signOut,
+  getUserByEmail,
 } from "firebase/auth";
 import { auth, db } from "../../firebase/Firebase";
 import { FcGoogle } from "react-icons/fc";
@@ -13,13 +14,15 @@ import { IoEye, IoEyeOff } from "react-icons/io5";
 import logo from "../../assets/logo.png";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import "./Login.css";
+import { UserAuth } from "../../context/authContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user } = UserAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,15 +50,15 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", user.email));
-    const querySnapshot = await getDocs(q);
-    const userExists = !querySnapshot.empty;
-    if (userExists) {
-      navigate("/dashboard");
-    } else {
-      showToastMessage("User doesn't exist please register")
-      await signOut(auth);
-    }
+      const q = query(usersRef, where("email", "==", user.email));
+      const querySnapshot = await getDocs(q);
+      const userExists = !querySnapshot.empty;
+      if (userExists) {
+        navigate("/completeProfile");
+      } else {
+        showToastMessage("User doesn't exist please register");
+        await signOut(auth);
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error.message);
     }
@@ -80,9 +83,8 @@ const Login = () => {
         const user = userCredential.user;
         if (user) {
           navigate("/completeProfile");
-        }
-        else{
-          navigate("/register")
+        } else {
+          navigate("/register");
         }
         setErrors({});
       }
@@ -105,14 +107,30 @@ const Login = () => {
   const handleResetPassword = async () => {
     setResetEmailSent(false)
     if(email){
-      try {
+      try {      
+        const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+      const userExists = !querySnapshot.empty;
+      if (!userExists) {
+        showToastMessage("User doesn't exist please register");
+      }
+       else {
         await sendPasswordResetEmail(auth, email);
         setResetEmailSent(true);
-      } catch (error) {
-        console.error("Error sending reset password email:", error.message);
-      }
+      } 
     }
-    else{
+      catch (error) {
+        if (error.code === 'auth/user-not-found') {
+          console.error("User not found. Unable to send reset password email.");
+        } else {
+          console.error("Error sending reset password email:", error.message);
+        }
+        setResetEmailSent(false);
+      }
+  
+}
+     else {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const newErrors = {};
       if (!email.trim() || !emailRegex.test(email)) {
@@ -141,7 +159,6 @@ const Login = () => {
   let currentLetterIndex = 0;
   let intervalId;
 
-  
   useLayoutEffect(() => {
     const animateText = () => {
       intervalId = setInterval(() => {
@@ -150,9 +167,9 @@ const Login = () => {
         if (textRef.current) {
           textRef.current.textContent = currentText;
         }
-  
+
         currentLetterIndex++;
-  
+
         if (currentLetterIndex > currentSentence.length) {
           clearInterval(intervalId);
           currentLetterIndex = 0;
@@ -161,11 +178,15 @@ const Login = () => {
         }
       }, 70);
     };
-  
+
     animateText();
-  
+
     return () => clearInterval(intervalId);
   }, [textRef.current]);
+
+  if(user?.uid){
+    return navigate("/dashboard")
+  }
 
   return (
     <>
@@ -175,17 +196,23 @@ const Login = () => {
             <div className="text-center w-full flex justify-center items-center">
               <div className="w-16 h-16 bg-slate-800 rounded-full mx-4 p-2">
                 <img src={logo} alt="logo" className="" />
-              </div>              
+              </div>
             </div>
-            
+
             <div className="mt-12 flex flex-col items-center">
-              <h1 className="text-2xl xl:text-3xl font-bold">Login for MonkeyMonk</h1>
+              <h1 className="text-2xl xl:text-3xl font-bold">
+                Login for MonkeyMonk
+              </h1>
               {errors.authError && (
                 <span className="ml-2 text-red-500">{errors.authError}</span>
               )}
               <div className="w-full flex-1 mt-8">
                 <form onSubmit={handleSubmit} className="mx-auto">
-                {resetEmailSent && <span className="ml-2 text-blue-500 font-semibold">Password reset link has been shared to your email</span>}
+                  {resetEmailSent && (
+                    <span className="ml-2 text-blue-500 font-semibold">
+                      Password reset link has been shared to your email
+                    </span>
+                  )}
                   <input
                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                     type="email"
@@ -258,7 +285,10 @@ const Login = () => {
                     )}
                   </button>
                   <div>
-                    <p className="underline cursor-pointer mt-2" onClick={handleResetPassword}>
+                    <p
+                      className="underline cursor-pointer mt-2"
+                      onClick={handleResetPassword}
+                    >
                       forgot password?
                     </p>
                   </div>
@@ -297,12 +327,14 @@ const Login = () => {
             </div>
           </div>
           <div className="flex-1 text-center hidden lg:flex login-card justify-center items-center">
-          <div className="auth-bg flex justify-center items-center p-4 text-center w-3/4 min-h-32">
-            <h3
-              className="text-xl md:text-4xl font-bold text-white"
-              ref={textRef}
-            > </h3>
-          </div>
+            <div className="auth-bg flex justify-center items-center p-4 text-center w-3/4 min-h-32">
+              <h3
+                className="text-xl md:text-4xl font-bold text-white"
+                ref={textRef}
+              >
+                {" "}
+              </h3>
+            </div>
           </div>
           <ToastContainer />
         </div>

@@ -17,9 +17,11 @@ import logo from "../../assets/logo.png";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { UserAuth } from "../../context/authContext";
 
 const Registration = () => {
   const navigate = useNavigate();
+  const { user } = UserAuth();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -199,6 +201,7 @@ const Registration = () => {
       showToastMessage("Registration with Google successfully!");
       navigate("/completeProfile");
     } catch (error) {
+      showToastMessage("Error signing up with Google");
       console.error("Error signing up with Google:", error.message);
     }
   };
@@ -246,6 +249,10 @@ const Registration = () => {
 
     return () => clearInterval(intervalId);
   }, [textRef.current]);
+
+  if(user?.uid){
+    return navigate("/dashboard")
+  }
 
   return (
     <div className="min-h-screen bg-white text-gray-900 flex justify-center items-center">

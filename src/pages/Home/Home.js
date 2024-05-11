@@ -31,7 +31,7 @@ const Home = () => {
             <div className="ml-auto mr-10">
               <FontAwesomeIcon icon={faBus} color="#Fcb814" size="2xl" />
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 dark:text-white">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-4 dark:text-white">
               Travel the <span className="text-primary-400">world</span> and
               forge unforgettable{" "}
               <span className="text-primary-400">memories</span> with
