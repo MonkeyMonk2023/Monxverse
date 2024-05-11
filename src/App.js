@@ -22,7 +22,6 @@ import TripPlanner from './pages/TripPlanner/TripPlanner';
 import Loader from './components/loader/Loader';
 import TermsAndConditions from './containers/Terms/TermsAndConditions';
 import PrivacyPolicy from './containers/Terms/PrivacyPolicy';
-import VerifyUser from "./pages/verifyUser/VerifyUser";
 import EmailVerification from "./pages/EmailVerification/EmailVerification";
 
 function App() {
@@ -57,8 +56,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/completeProfile" element={<CompleteProfile />} />
-        <Route path="/verifyUser" element={<VerifyUser />} />
-        <Route path="/emailVerify" element={<EmailVerification />} />
+        <Route path="/verifyEmail" element={<EmailVerification />} />
         <Route
           path="/*"
           element={

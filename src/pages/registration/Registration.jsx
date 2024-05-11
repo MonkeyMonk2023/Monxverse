@@ -163,8 +163,7 @@ const Registration = () => {
       });
 
       await setDoc(doc(db, "userChats", userId), {});
-      // await setDoc(doc(db, "trips", userId), {});
-      navigate("/login");
+      navigate("/verifyEmail")
     } catch (error) {
       console.error("Error registering user:", error.message);
     }

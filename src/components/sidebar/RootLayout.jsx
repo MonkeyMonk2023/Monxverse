@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from './Sidebar';
 import { UserAuth } from '../../context/authContext';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from "../../firebase/Firebase";
+
 
 const RootLayout = ({children}) => {
   const navigate = useNavigate();
@@ -10,8 +13,29 @@ const RootLayout = ({children}) => {
 
   const [completeUserData , setCompleteUserData] = useState();
 
+  const fetchCompleteUserDetails = async () => {
+    const userDocRef = doc(db, "users", currentUser?.uid);
+    try {
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const user = userDocSnap.data();
+        setCompleteUserData(user);
+        console.log("User data:", user);
+      } else {
+        console.log("User document does not exist.");
+      }
+    } catch (error) {
+      console.error("Error fetching user document:", error);      
+    }
+  };
+    useEffect(() => {
+      if(currentUser.uid)
+        fetchCompleteUserDetails();
+  }, [currentUser]);
+
     if(user){
-      if(completeUserData?.isProfileComplete){
+      if(!completeUserData?.isProfileComplete){
         return navigate("/completeProfile");
       }
       else{
