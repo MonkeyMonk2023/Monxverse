@@ -69,7 +69,7 @@ const CompleteProfile = () => {
     try {
       const userQuery = query(
         collection(db, "users"),
-        where("userId", "==", currentUser.uid)
+        where("userId", "==", currentUser?.uid)
       );
       const querySnapshot = await getDocs(userQuery);
       if (!querySnapshot.empty) {
@@ -127,12 +127,12 @@ const CompleteProfile = () => {
 
   const submitUserProfile = async (e) => {
     e.preventDefault();
-    if (!mobileVerificationStatus) {
-      toast.error("Please verify your phone number before submitting.", {
-        position: "bottom-right",
-      });
-      return;
-    }
+    // if (!mobileVerificationStatus) {
+    //   toast.error("Please verify your phone number before submitting.", {
+    //     position: "bottom-right",
+    //   });
+    //   return;
+    // }
     const newErrors = {};
     Object.keys(profileData).forEach((key) => {
       if (
@@ -166,7 +166,7 @@ const CompleteProfile = () => {
       if (profileImage) {
         const storageRef = ref(
           storage,
-          `profileImages/${currentUser.uid}/${profileImage.name}`
+          `profileImages/${currentUser?.uid}/${profileImage.name}`
         );
         await uploadBytes(storageRef, profileImage);
         imageUrl = await getDownloadURL(storageRef);
@@ -189,7 +189,7 @@ const CompleteProfile = () => {
         showPhoneNumber:true
       };
 
-      const userDocRef = doc(db, "users", currentUser.uid);
+      const userDocRef = doc(db, "users", currentUser?.uid);
       await updateDoc(userDocRef, updatedUserData);
       showToastMessage("Profile updated successfully.")
       setProfileData({});
@@ -223,7 +223,7 @@ const CompleteProfile = () => {
   useEffect(() => {
     const fetchCompleteUserDetails = async () => {
       if (!currentUser?.uid) return;
-      const userDocRef = doc(db, "users", currentUser.uid);
+      const userDocRef = doc(db, "users", currentUser?.uid);
       try {
         const userDocSnap = await getDoc(userDocRef);
         if (userDocSnap.exists()) {
@@ -390,14 +390,14 @@ const CompleteProfile = () => {
               {errors.phoneNumber && (
                 <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
               )}
-              {!mobileVerificationStatus && <button
+              {/* {!mobileVerificationStatus && <button
                 type="button"
                 className="mt-4 bg-blue-500 text-white p-2 rounded"
                 onClick={() => setShowOTPdialog(true)}
                 disabled={loading}
               >
                 Send OTP
-              </button>}
+              </button>} */}
             </div>
             <div>
               <label
@@ -523,7 +523,7 @@ const CompleteProfile = () => {
         </form>
       </div>
       <ToastContainer />
-      {showOTPdialog && <OTPdialog phoneNumber={profileData.phoneNumber} onVerificationStatus={handleMobileVerificationStatus} />}
+      {/* {showOTPdialog && <OTPdialog phoneNumber={profileData.phoneNumber} onVerificationStatus={handleMobileVerificationStatus} />} */}
     </div>
   );
 };

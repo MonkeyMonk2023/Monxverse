@@ -21,16 +21,12 @@ const RootLayout = ({children}) => {
       if (userDocSnap.exists()) {
         const user = userDocSnap.data();
         setCompleteUserData(user);
-        console.log("User data:", user);
-      } else {
-        console.log("User document does not exist.");
       }
-    } catch (error) {
-      console.error("Error fetching user document:", error);      
+    } catch (error) {   
     }
   };
     useEffect(() => {
-      if(currentUser.uid)
+      if(currentUser?.uid)
         fetchCompleteUserDetails();
   }, [currentUser]);
 

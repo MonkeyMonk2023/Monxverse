@@ -20,7 +20,7 @@ const Message = ({ message }) => {
     <div
       ref={ref}
       className={
-        message.senderId === currentUser.uid
+        message.senderId === currentUser?.uid
           ? `max-w-[75%] bg-[#FCB814] p-2 m-2 rounded-lg text-white px-3`
           : ` bg-[#666563] p-2 m-2 rounded-lg text-white px-3 `
       }

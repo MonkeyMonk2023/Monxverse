@@ -40,7 +40,7 @@ const Search = () => {
         console.error("Error fetching user document:", error);
       }
     };
-    if (currentUser.uid) {
+    if (currentUser?.uid) {
       fetchCompleteUserDetails();
     }
   }, [currentUser]);
@@ -82,16 +82,16 @@ const Search = () => {
     setSuggestedUsers([]);
     setErr("");
     const combinedId =
-      currentUser.uid > user.userId
-        ? currentUser.uid + user.userId
-        : user.userId + currentUser.uid;
+      currentUser?.uid > user.userId
+        ? currentUser?.uid + user.userId
+        : user.userId + currentUser?.uid;
     try {
       const res = await getDoc(doc(db, "chats", combinedId));
 
       if (!res.exists()) {
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
-        await updateDoc(doc(db, "userChats", currentUser.uid), {
+        await updateDoc(doc(db, "userChats", currentUser?.uid), {
           [combinedId + ".userInfo"]: {
             userId: user.userId,
             username: user.username,
@@ -102,7 +102,7 @@ const Search = () => {
 
         await updateDoc(doc(db, "userChats", user.userId), {
           [combinedId + ".userInfo"]: {
-            userId: currentUser.uid,
+            userId: currentUser?.uid,
             username: completeUserData.username,
             photoURL: completeUserData.photoURL,
           },

@@ -50,7 +50,7 @@ const Profile = () => {
     try {
       const userQuery = query(
         collection(db, "users"),
-        where("userId", "==", currentUser.uid)
+        where("userId", "==", currentUser?.uid)
       );
       const querySnapshot = await getDocs(userQuery);
       if (!querySnapshot.empty) {
@@ -69,7 +69,7 @@ const Profile = () => {
   const handleSaveChanges = async (e) => {
     e.preventDefault();
     try {
-      await updateDoc(doc(db, "users", currentUser.uid), profileData);
+      await updateDoc(doc(db, "users", currentUser?.uid), profileData);
       showToastMessage("Profile data updated successfully! ");
     } catch (error) {
       console.error("Error updating user data: ", error);
@@ -80,7 +80,7 @@ const Profile = () => {
     const profileImage = e.target.files[0];
     const storageRef = ref(
       storage,
-      `profileImages/${currentUser.uid}/${profileImage.name}`
+      `profileImages/${currentUser?.uid}/${profileImage.name}`
     );
     await uploadBytes(storageRef, profileImage);
     const imageUrl = await getDownloadURL(storageRef);
@@ -142,14 +142,14 @@ const Profile = () => {
   const handleDelete = async () => {
     try {
       const querySnapshot = await getDocs(
-        query(collection(db, "trips"), where("userId", "==", currentUser.uid))
+        query(collection(db, "trips"), where("userId", "==", currentUser?.uid))
       );
       const deletePromises = querySnapshot.docs.map(async (doc) => {
         await deleteDoc(doc.ref);
       });
       await Promise.all(deletePromises);
       await deleteUser(auth.currentUser);
-      await deleteDoc(doc(db, "users", currentUser.uid));
+      await deleteDoc(doc(db, "users", currentUser?.uid));
 
       navigate("/login");
     } catch (error) {

@@ -68,7 +68,7 @@ const Chat = () => {
     };
 
     currentUser?.uid && getChats();
-  }, [currentUser.uid]);
+  }, [currentUser?.uid]);
 
   const handleSelect = async(u) => {
     setSelectedChatId(u.userId);
@@ -85,8 +85,8 @@ const Chat = () => {
       const messages = chatData.messages || [];
   
       const updatedMessages = messages.map((message) => {
-        if ((message.senderId !== currentUser.uid )&& !message.readStatus[currentUser.uid]) {
-          return { ...message, readStatus: { ...message.readStatus, [currentUser.uid]: true } };
+        if ((message.senderId !== currentUser?.uid )&& !message.readStatus[currentUser?.uid]) {
+          return { ...message, readStatus: { ...message.readStatus, [currentUser?.uid]: true } };
         }
         return message;
       });
@@ -111,7 +111,7 @@ const Chat = () => {
               messages: arrayUnion({
                 id: uuid(),
                 text,
-                senderId: currentUser.uid,
+                senderId: currentUser?.uid,
                 date: Timestamp.now(),
                 img: downloadURL,
               }),
@@ -124,17 +124,17 @@ const Chat = () => {
         messages: arrayUnion({
           id: uuid(),
           text,
-          senderId: currentUser.uid,
+          senderId: currentUser?.uid,
           date: Timestamp.now(),
           readStatus: {
-            [currentUser.uid]: true,
+            [currentUser?.uid]: true,
             [data.User.userId]: false,
           },
         }),
       });
     }
 
-    await updateDoc(doc(db, "userChats", currentUser.uid), {
+    await updateDoc(doc(db, "userChats", currentUser?.uid), {
       [data.chatId + ".lastMessage"]: {
         text,
       },
@@ -183,7 +183,7 @@ const Chat = () => {
         const chatData = docSnapshot.data();
         const messages = chatData.messages || [];
           const unreadMessages = messages.filter((message) => {
-          return message.senderId !== currentUser.uid && !message.readStatus[currentUser.uid];
+          return message.senderId !== currentUser?.uid && !message.readStatus[currentUser?.uid];
         });
         return unreadMessages.length  
       }

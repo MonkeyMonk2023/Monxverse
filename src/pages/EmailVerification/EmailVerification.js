@@ -6,7 +6,6 @@ import { IoMdRefreshCircle } from "react-icons/io";
 const EmailVerification = () => {
   const navigate = useNavigate();
   const { user } = UserAuth();
-  console.log(user);
 
   if(user?.emailVerified){
     return navigate("/login")

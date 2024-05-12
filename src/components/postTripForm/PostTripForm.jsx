@@ -45,7 +45,7 @@ function PostTripForm({ closeModal }) {
 
   useEffect(() => {
     const fetchCompleteUserDetails = async () => {
-      const userDocRef = doc(db, "users", currentUser.uid);
+      const userDocRef = doc(db, "users", currentUser?.uid);
       try {
         const userDocSnap = await getDoc(userDocRef);
 
@@ -230,7 +230,7 @@ function PostTripForm({ closeModal }) {
         from: selectedTripSource,
         to: selectedTripDestination,
         date: startDate,
-        userId: currentUser.uid,
+        userId: currentUser?.uid,
         tripDescription: tripDescription,
         tags: tags,
         timestamp: Timestamp.now(),
