@@ -202,7 +202,6 @@ const Registration = () => {
       navigate("/completeProfile");
     } catch (error) {
       showToastMessage("Error signing up with Google");
-      console.error("Error signing up with Google:", error.message);
     }
   };
 
