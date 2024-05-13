@@ -12,14 +12,18 @@ import {
   Timestamp,
   updateDoc,
   serverTimestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { UserAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
+import { MdDelete } from "react-icons/md";
+import Dialog from "../dialogs/DeleteTripDialog";
 
 const PostTripCard = ({ trip }) => {
   const navigate = useNavigate();
   const { user } = UserAuth();
   const [currentUser, setCurrentUser] = useState({});
+  const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
     const fetchCompleteUserDetails = async () => {
@@ -86,9 +90,27 @@ const PostTripCard = ({ trip }) => {
           },
           [combinedId + ".date"]: serverTimestamp(),
         });
-        navigate("/chat")
+        navigate("/chat");
       }
-    } catch (err) {
+    } catch (err) {}
+  };
+
+  const handleCancelDialog = () => {
+    setShowDialog(false);
+  };
+
+  const handleConfirmDialog = () => {
+    deleteTrip();
+    setShowDialog(false);
+  };
+
+  const deleteTrip = async () => {
+    try {
+      const tripRef = doc(db, "trips", trip.id);
+      await deleteDoc(tripRef);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting trip: ", error);
     }
   };
 
@@ -108,14 +130,18 @@ const PostTripCard = ({ trip }) => {
               {tripPartner.username}
             </h2>
           </div>
+          {trip.userId === user.uid && (
+            <div className="cursor-pointer " onClick={() => setShowDialog(true)}>
+              <MdDelete size={24} className="text-slate-700" />
+            </div>
+          )}
         </div>
         <div className="items-center w-full flex">
           <div>
             <h2 className="text-xl font-semibold">{trip.from}</h2>
           </div>
-          <div className=" mx-5 w-full h-[1px] relative flex justify-center items-center border-dashed border border-slate-300">
-                To
-            {/* <div className="absolute"></div> */}
+          <div className=" mx-5 w-full h-[1px] relative flex justify-center items-center border-dashed border border-slate-300 ">
+            <p className="bg-white font-bold px-2">To</p>
           </div>
           <div>
             <h2 className="text-xl font-semibold">{trip.to}</h2>
@@ -147,6 +173,9 @@ const PostTripCard = ({ trip }) => {
           <FontAwesomeIcon icon={faMessage} className="text-white" size="xl" />
         </div>
       </div>
+      {showDialog && (
+        <Dialog onCancel={handleCancelDialog} onConfirm={handleConfirmDialog} />
+      )}
     </>
   );
 };
