@@ -87,7 +87,8 @@ const CompleteProfile = () => {
     let newValue = value;
 
     if (name === "username") {
-      newValue = value.replace(/[^a-z0-9_]/g, "");
+      newValue = newValue.toLowerCase();
+      newValue = newValue.replace(/[^a-z0-9_]/g, "");
       setErrors({
         ...errors,
         username: "",
@@ -99,14 +100,16 @@ const CompleteProfile = () => {
 
   const checkUsernameExists =async(username)=>{
     const isUsernameExist = async (username) => {
-      try {
-        const usersRef = collection(db, "users");
-        const userQuery = query(usersRef, where("username", "==", username));
-        const querySnapshot = await getDocs(userQuery);
-        return !querySnapshot.empty;
-      } catch (error) {
-        console.error("Error checking username existence:", error.message);
-        return false;
+      if(username){
+        try {
+          const usersRef = collection(db, "users");
+          const userQuery = query(usersRef, where("username", "==", username));
+          const querySnapshot = await getDocs(userQuery);
+          return !querySnapshot.empty;
+        } catch (error) {
+          console.error("Error checking username existence:", error.message);
+          return false;
+        }
       }
     };
     const usernameExists = await isUsernameExist(username);
