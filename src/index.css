@@ -186,3 +186,25 @@ outline: none;
   @apply: bg-green-400;
   background-color: #68D391;
 }
+
+.blob {
+  width: 240px;
+  height: 240px;
+  background-color: #fcb814;
+  position: absolute;
+  -webkit-filter: blur(40px);
+  filter: blur(40px);
+  opacity: 0.3;
+  overflow: hidden;
+  border-radius: 120px;
+  z-index: 0;
+  box-shadow: 0 0 30px 30px rgba(52, 144, 220, 0.3);
+}
+.blob-top-left {
+  top: 0;
+  left: 0;
+}
+.blob-bottom-right {
+  bottom: 0;
+  right: 0;
+}

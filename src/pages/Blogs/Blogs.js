@@ -61,9 +61,7 @@ const Blogs = () => {
             <h2 className="text-4xl font-semibold text-gray-800 leading-tight">
               {mainBlog.title}
             </h2>
-            <p
-              className="py-2 text-green-700 inline-flex items-center justify-center mb-2"
-            >
+            <p className="py-2 text-green-700 inline-flex items-center justify-center mb-2">
               {mainBlog.category}
             </p>
           </div>
@@ -83,12 +81,14 @@ const Blogs = () => {
         </div>
         <div className="">
           <div className="flex flex-wrap space-x-2">
-          {mainBlog.tags.map((tag)=>(
-            <p className="mx-1 bg-primary-200 py-1 my-1 px-3 rounded-2xl">{tag}</p>
-          ))}
+            {mainBlog.tags.map((tag) => (
+              <p className="mx-1 bg-primary-200 py-1 my-1 px-3 rounded-2xl">
+                {tag}
+              </p>
+            ))}
           </div>
           <div>
-          <p className="text-[#1358fb]">{mainBlog.author}</p>
+            <p className="text-[#1358fb]">{mainBlog.author}</p>
           </div>
         </div>
       </main>
@@ -98,7 +98,8 @@ const Blogs = () => {
           <div className="space-y-2 text-center">
             <h2 className="text-3xl font-bold">Browse all blog posts</h2>
             <p className="font-serif text-sm dark:text-gray-600">
-              Qualisque erroribus usu at, duo te agam soluta mucius.
+              Contact us if you want to be featured on MonkeyMonk and share your
+              travel experiences on our website!
             </p>
           </div>
 
@@ -124,12 +125,10 @@ const Blogs = () => {
                 <div className="flex flex-col flex-1 p-6">
                   <p
                     rel="noopener noreferrer"
-                    
                     aria-label="Te nulla oportere reprimique his dolorum"
                   ></p>
                   <p
                     rel="noopener noreferrer"
-                    
                     className="text-xs tracking-wider uppercase hover:underline dark:text-violet-600"
                   >
                     {blog.category}
@@ -147,30 +146,30 @@ const Blogs = () => {
         </div>
       </section>
       <div className="py-6 text-sm text-center dark:text-gray-400">
-          © 2023 MonkeyMonk. All rights reserved.
-          <p className="text-xs mt-1">
-            By using MonkeyMonk, you agree to our{" "}
-            <span
-              className="cursor-pointer underline"
-              onClick={() => {
-                navigate("/terms&conditions");
-              }}
-              target="_blank"
-            >
-              Terms of Service
-            </span>{" "}
-            and{" "}
-            <span
-              className="cursor-pointer underline"
-              onClick={() => {
-                navigate("/privacypolicy");
-              }}
-              target="_blank"
-            >
-              Privacy Policy
-            </span>
-          </p>
-        </div>
+        © 2023 MonkeyMonk. All rights reserved.
+        <p className="text-xs mt-1">
+          By using MonkeyMonk, you agree to our{" "}
+          <span
+            className="cursor-pointer underline"
+            onClick={() => {
+              navigate("/terms&conditions");
+            }}
+            target="_blank"
+          >
+            Terms of Service
+          </span>{" "}
+          and{" "}
+          <span
+            className="cursor-pointer underline"
+            onClick={() => {
+              navigate("/privacypolicy");
+            }}
+            target="_blank"
+          >
+            Privacy Policy
+          </span>
+        </p>
+      </div>
     </div>
   );
 };

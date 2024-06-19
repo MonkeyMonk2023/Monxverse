@@ -24,8 +24,8 @@ const Home = () => {
   return (
     <>
       <div className="min-h-screen dark:bg-gray-900">
-        <div className="w-80 h-80 bg-primary-400 absolute top-0 left-0 z-0 blur-3xl opacity-30 overflow-hidden rounded-full pointer-events-none"></div>
-        <div className="w-80 h-80 bg-primary-400 absolute bottom-0 right-0 z-0 blur-3xl opacity-30 overflow-hidden rounded-full pointer-events-none"></div>
+        <div className="blob blob-top-left"></div>
+        <div className="blob blob-bottom-right"></div>
         <div className="lg:flex lg:flex-row">
           <div className="lg:w-1/2 p-10 xl:p-16 flex flex-col">
             <div className="ml-auto mr-10">

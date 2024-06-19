@@ -38,14 +38,19 @@ const BlogCatalog = () => {
 
   return (
     <section className="px-5 py-8 dark:bg-gray-800 dark:text-gray-100 relative bg-gray-100">
-    <div className="w-60 h-60 bg-primary-400 absolute top-0 left-0 z-0 blur-3xl opacity-30 overflow-hidden rounded-full"></div>
-      <div className="w-60 h-60 bg-primary-400 absolute bottom-0 right-0 z-0 blur-3xl opacity-30 overflow-hidden rounded-full"></div>
+      <div className="blob blob-top-left"></div>
+      <div className="blob blob-bottom-right"></div>
       <div className="mx-auto max-w-screen-md">
         <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center dark:text-white">
           Blogs
         </h2>
       </div>
-      <div className="container flex flex-col md:flex-row mx-auto gap-y-6 md:gap-6">
+      <div
+        className="container flex flex-col md:flex-row mx-auto gap-y-6 md:gap-6 hover:cursor-pointer"
+        onClick={() => {
+          handleBlogClick(blogs[0]?.id);
+        }}
+      >
         <div className="py-4 md:w-7/12 ">
           <div className="bg-white rounded-lg mb-6 tracking-wide">
             <div className="md:flex-shrink-0">
@@ -67,7 +72,12 @@ const BlogCatalog = () => {
               </p>
               <div className="flex items-center justify-between mt-2">
                 <p className="text-[#1358fb] text-xs">{blogs[0]?.author}</p>
-                <p onClick={() => {handleBlogClick(blogs[0]?.id)}} className="text-primary-400 text-xs cursor-pointer">
+                <p
+                  onClick={() => {
+                    handleBlogClick(blogs[0]?.id);
+                  }}
+                  className="text-primary-400 text-xs cursor-pointer"
+                >
                   Read More
                 </p>
               </div>
@@ -80,32 +90,36 @@ const BlogCatalog = () => {
               Latest
             </p>
           </div>
-      <div className="flex flex-col divide-y dark:divide-gray-700">
-        {blogs?.slice(1, 6).map((blog) => (
-          <div key={blog.id} className="flex px-1 py-4">
-            <div className="mr-4 w-2/6 h-20 xl:h-24">
-              <img
-                alt=""
-                className="w-full h-full object-cover"
-                src={blog.image}
-              />
-            </div>
-            <div className="flex flex-col space-y-2 w-4/6">
-              <p
-                className="font-serif hover:underline"
+          <div className="flex flex-col divide-y dark:divide-gray-700">
+            {blogs?.slice(1, 6).map((blog) => (
+              <div
+                key={blog.id}
+                className="flex px-1 py-4 hover:cursor-pointer"
                 onClick={() => handleBlogClick(blog.id)}
               >
-                {blog.title}
-              </p>
-              <p className="text-xs dark:text-gray-400">{blog.author}</p>
-              <p className="block text-primary-400 lg:inline text-xs">
-                {blog.category}
-              </p>
-            </div>
+                <div className="mr-4 w-2/6 h-20 xl:h-24">
+                  <img
+                    alt=""
+                    className="w-full h-full object-cover"
+                    src={blog.image}
+                  />
+                </div>
+                <div className="flex flex-col space-y-2 w-4/6">
+                  <p
+                    className="font-serif hover:underline"
+                    onClick={() => handleBlogClick(blog.id)}
+                  >
+                    {blog.title}
+                  </p>
+                  <p className="text-xs dark:text-gray-400">{blog.author}</p>
+                  <p className="block text-primary-400 lg:inline text-xs">
+                    {blog.category}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      </div>
+        </div>
       </div>
     </section>
   );
