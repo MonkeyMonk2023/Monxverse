@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import { IoIosArrowBack } from "react-icons/io";
 import { AiOutlineAppstore } from "react-icons/ai";
 import { BsPerson } from "react-icons/bs";
-import { HiOutlineDatabase } from "react-icons/hi";
+import { HiChat, HiOutlineGlobe } from "react-icons/hi";
 import { FiLogOut } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import { MdMenu } from "react-icons/md";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { faMessage } from "@fortawesome/free-solid-svg-icons";
 
 import { UserAuth } from "../../context/authContext";
 import logo from "../../assets/logo.png";
@@ -117,8 +118,14 @@ const Sidebar = () => {
             </li>
             <li>
               <NavLink to={"/chat"} className="link">
-                <HiOutlineDatabase size={23} className="min-w-max" />
+                <HiChat size={23} className="min-w-max" />
                 Chat
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to={"/zenora"} className="link">
+                <HiOutlineGlobe size={23} className="min-w-max" />
+                Plan a Trip
               </NavLink>
             </li>
             <div className="h-[1px] bg-slate-300 w-full my-2"></div>

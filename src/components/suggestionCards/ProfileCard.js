@@ -63,16 +63,6 @@ const ProfileCard = ({ user, id }) => {
               </div>
               <table className="text-xs my-3 w-full mx-auto">
                 <tbody>
-                  {otherUser.showPhoneNumber && (
-                    <tr>
-                      <td className="xl:text-xl md:text-md px-2 py-2 w-1/2 font-bold text-right">
-                        Phone
-                      </td>
-                      <td className="px-2 py-2 w-1/2 md:text-lg">
-                        {otherUser.phoneNumber}
-                      </td>
-                    </tr>
-                  )}
                   <tr>
                     <td className="px-2 py-2  w-1/2 xl:text-xl md:text-md font-bold text-right">
                       Email

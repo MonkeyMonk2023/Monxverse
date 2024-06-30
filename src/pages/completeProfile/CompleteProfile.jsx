@@ -13,9 +13,6 @@ import {
 } from "firebase/firestore";
 import { UserAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
-import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
-import OTPdialog from "../../components/OTPdialog/OTPdialog";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,7 +29,6 @@ const CompleteProfile = () => {
     username: "",
     firstName: "",
     lastName: "",
-    phoneNumber: "",
     bio: "",
     gender: "",
     DOB: "",
@@ -43,7 +39,6 @@ const CompleteProfile = () => {
     email: "",
     photoURL: defaultProfileImage,
     isProfileComplete: false,
-    showPhoneNumber:true
   });
 
   const [userData, setUserData] = useState(null);
@@ -59,7 +54,6 @@ const CompleteProfile = () => {
     username: "",
     firstName: "",
     lastName: "",
-    phoneNumber: "",
     bio: "",
     gender: "",
     DOB: "",
@@ -142,7 +136,6 @@ const CompleteProfile = () => {
         !profileData[key] &&
         key !== "photoURL" &&
         key !== "isProfileComplete" &&
-        key !== "showPhoneNumber" &&
         key !== "email" &&
         key !== "password" &&
         key !== "instagramProfile" &&
@@ -180,7 +173,6 @@ const CompleteProfile = () => {
         username: profileData.username,
         firstName: profileData.firstName,
         lastName: profileData.lastName,
-        phoneNumber: profileData.phoneNumber,
         gender: profileData.gender,
         bio: profileData.bio,
         DOB: profileData.DOB,
@@ -189,7 +181,6 @@ const CompleteProfile = () => {
         instagramProfile: profileData.instagramProfile,
         photoURL: imageUrl,
         isProfileComplete: true,
-        showPhoneNumber:true
       };
 
       const userDocRef = doc(db, "users", currentUser?.uid);
@@ -214,12 +205,12 @@ const CompleteProfile = () => {
     }));
   };
 
-  const handlePhoneChange = (value) => {
-    setProfileData((prevProfileData) => ({
-      ...prevProfileData,
-      phoneNumber: value,
-    }));
-  };
+  // const handlePhoneChange = (value) => {
+  //   setProfileData((prevProfileData) => ({
+  //     ...prevProfileData,
+  //     phoneNumber: value,
+  //   }));
+  // };
 
   const [completeUserData, setCompleteUserData] = useState();
 
@@ -372,7 +363,7 @@ const CompleteProfile = () => {
                 <p className="text-red-500 text-sm">{errors.lastName}</p>
               )}
             </div>
-            <div>
+            {/* <div>
               <label
                 htmlFor="mobileNumber"
                 className="mt-4 text-sm font-medium text-gray-500"
@@ -400,8 +391,8 @@ const CompleteProfile = () => {
                 disabled={loading}
               >
                 Send OTP
-              </button>} */}
-            </div>
+              </button>}
+            </div> */}
             <div>
               <label
                 htmlFor="bio"

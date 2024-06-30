@@ -5,6 +5,7 @@ import "./App.css";
 import Login from "./pages/login/Login";
 import Registration from "./pages/registration/Registration";
 import RootLayout from "./components/sidebar/RootLayout";
+import ZenoraLayout from "./components/sidebar/ZenoraLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Profile from "./pages/profile/Profile";
 import Chat from "./pages/chat/Chat";
@@ -19,7 +20,6 @@ import BlogCatalog from './pages/Blogs/Blogs';
 import Footer from './components/footer/Footer';
 import Navbar from './components/navbar/Navbar';
 import TripPlanner from './pages/TripPlanner/TripPlanner';
-import Loader from './components/loader/Loader';
 import TermsAndConditions from './containers/Terms/TermsAndConditions';
 import PrivacyPolicy from './containers/Terms/PrivacyPolicy';
 import EmailVerification from "./pages/EmailVerification/EmailVerification";
@@ -28,7 +28,6 @@ function App() {
   return (
     <Router>
       <Routes>
-          <Route path='/zenora' element={<TripPlanner/>} />
           <Route path='/blogs/:id' element={<BlogCatalog/>} />
           <Route path='/terms&conditions' element={<TermsAndConditions/>} />
           <Route path='/privacypolicy' element={<PrivacyPolicy/>} />
@@ -67,6 +66,16 @@ function App() {
                 <Route path="/chat" element={<Chat />} />
               </Routes>
             </RootLayout>
+          }
+        />
+        <Route
+          path="/zenora"
+          element={
+            <ZenoraLayout>
+              <Routes>
+                <Route path="/" element={<TripPlanner />} />
+              </Routes>
+            </ZenoraLayout>
           }
         />
       </Routes>

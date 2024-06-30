@@ -30,7 +30,6 @@ const Registration = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
     bio: "",
     gender: "",
     DOB: "",
@@ -45,7 +44,6 @@ const Registration = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
   });
 
   const [signupError, setSignupError] = useState("");
@@ -149,7 +147,6 @@ const Registration = () => {
         username: "",
         firstName: "",
         lastName: "",
-        phoneNumber: "",
         gender: "",
         DOB: "",
         facebookProfile: "",
@@ -157,7 +154,6 @@ const Registration = () => {
         instagramProfile: "",
         photoURL: "",
         isProfileComplete: false,
-        showPhoneNumber: true,
       });
       await updateProfile(User, {
         displayName: formData.username,
@@ -184,7 +180,6 @@ const Registration = () => {
         lastName: "",
         email: user.email,
         photoURL: user.photoURL || "",
-        phoneNumber: "",
         bio: "",
         gender: "",
         DOB: "",

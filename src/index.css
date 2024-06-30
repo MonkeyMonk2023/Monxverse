@@ -140,7 +140,7 @@ body {
  .pac-placeholder {
      color: gray
  } 
- .PhoneInput{
+ /* .PhoneInput{
   position: relative; 
 padding-top: 1rem;
 padding-bottom: 1rem; 
@@ -165,7 +165,7 @@ cursor: pointer;
 }
 .PhoneInputInput:focus {
 outline: none;
-}
+} */
 
 
 .auth-bg{
@@ -199,6 +199,8 @@ outline: none;
   border-radius: 120px;
   z-index: 0;
   box-shadow: 0 0 30px 30px rgba(52, 144, 220, 0.3);
+  pointer-events: none;
+  user-select: none;
 }
 .blob-top-left {
   top: 0;

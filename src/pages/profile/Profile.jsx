@@ -35,7 +35,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [isPhoneEnabled, setIsPhoneEnabled] = useState(false);
+  // const [isPhoneEnabled, setIsPhoneEnabled] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [showDialog, setShowDialog] = useState(false);
   const handleChange = (e) => {
@@ -293,7 +293,7 @@ const Profile = () => {
                         />
                       </div>
                     </div>
-                    <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
+                    {/* <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label
                         htmlFor="phone"
                         className="flex-1 text-gray-800 font-semibold"
@@ -340,7 +340,7 @@ const Profile = () => {
                           }
                         ></label>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="mb-6 inline-flex md:flex md:items-center gap-3 flex-col md:flex-row w-full">
                       <label

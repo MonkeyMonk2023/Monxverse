@@ -198,8 +198,8 @@ const Chat = () => {
     <div className="flex flex-col h-screen">
       <div className="flex flex-1">
         {showChatList && (
-          <div className="w-full lg:w-1/4 md:2/4  overflow-y-auto shadow-lg ">
-            <div className="bg-white p-4 h-20 shadow-lg">
+          <div className="w-full lg:w-1/4 md:2/4  overflow-y-auto bg-white">
+            <div className="p-4 h-20">
               <h1 className="text-xl text-black font-bold">Chats</h1>
             </div>
             <div>

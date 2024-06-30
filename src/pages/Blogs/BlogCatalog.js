@@ -91,7 +91,7 @@ const BlogCatalog = () => {
             </p>
           </div>
           <div className="flex flex-col divide-y dark:divide-gray-700">
-            {blogs?.slice(1, 6).map((blog) => (
+            {blogs?.slice(1, 5).map((blog) => (
               <div
                 key={blog.id}
                 className="flex px-1 py-4 hover:cursor-pointer"
