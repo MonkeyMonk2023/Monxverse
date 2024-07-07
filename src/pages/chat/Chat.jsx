@@ -41,7 +41,7 @@ const Chat = () => {
   const currentUser = user;
   const { dispatch, data } = useContext(ChatContext);
 
-  const [showOtherUserProfile,setShowOtherUserProfile] = useState(true);
+  const [showOtherUserProfile,setShowOtherUserProfile] = useState(false);
 
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data?.chatId), (doc) => {
