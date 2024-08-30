@@ -54,11 +54,18 @@ const Login = () => {
       const querySnapshot = await getDocs(q);
       const userExists = !querySnapshot.empty;
       if (userExists) {
-        navigate("/completeProfile");
+        const userDoc = querySnapshot.docs[0].data();
+        if (userDoc.isProfileComplete === false) {
+          console.log("User's profile is incomplete, redirecting to complete profile page.");
+          navigate("/completeProfile");
+        }
       } else {
-        showToastMessage("User doesn't exist please register");
         await signOut(auth);
-      }
+        navigate("/register");
+        setTimeout(() => {
+          showToastMessage("User doesn't exist. Please register.");
+        }, 1000);
+      }      
     } catch (error) {
       console.error("Error signing in with Google:", error.message);
     }

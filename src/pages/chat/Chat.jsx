@@ -239,7 +239,7 @@ const Chat = () => {
           </div>
         )}
         <div
-          className={`w-full lg:w-3/4 md:2/4 min-h-screen  ${
+          className={`w-full lg:w-3/4 md:2/4 h-screen  ${
             showChatList ? "md:block hidden" : "block"
           }`}
         >

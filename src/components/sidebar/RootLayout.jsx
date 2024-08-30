@@ -30,19 +30,20 @@ const RootLayout = ({children}) => {
         fetchCompleteUserDetails();
   }, [currentUser]);
 
-    if(user){
-      if(!completeUserData?.isProfileComplete){
-        return navigate("/completeProfile");
-      }
-      else{
+  if (user) {
+    if (completeUserData?.isProfileComplete === false) {
+      return navigate("/completeProfile");
+    } else {
       return (
-        <div className="flex ">
-          <Sidebar/>
-          <main className="h-screen flex-1 mx-auto overflow-y-scroll md:pl-2 pl-4">{children}</main>
+        <div className="flex">
+          <Sidebar />
+          <main className="h-screen flex-1 mx-auto overflow-y-scroll md:pl-2 pl-4">
+            {children}
+          </main>
         </div>
       );
     }
-    }
+  }  
    
     else{
         return <Navigate to='/login' />

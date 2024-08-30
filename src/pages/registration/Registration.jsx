@@ -196,10 +196,12 @@ const Registration = () => {
       showToastMessage("Registration with Google successfully!");
       navigate("/completeProfile");
     } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        setSignupError("Email address is already in use.");
       showToastMessage("Error signing up with Google");
     }
   };
-
+  }
   const showToastMessage = (toastMessage) => {
     toast.success(toastMessage, {
       position: "bottom-right",

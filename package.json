@@ -1,5 +1,5 @@
 {
-  "name": "monkey_monk_github",
+  "name": "monxverse_github",
   "version": "0.1.0",
   "homepage": "https://github.com/MonkeyMonk2023/MonkeyMonk",
   "private": false,
@@ -12,6 +12,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "dotenv": "^16.4.5",
     "emailjs-com": "^3.2.0",
     "firebase": "^9.15.0",
@@ -62,5 +63,13 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.4.3"
+  },
+  "babel": {
+    "plugins": ["transform-remove-console"],
+    "env": {
+      "production": {
+        "plugins": ["transform-remove-console"]
+      }
+    }
   }
 }
