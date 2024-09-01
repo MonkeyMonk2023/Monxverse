@@ -1,7 +1,7 @@
 {
   "name": "monxverse_github",
   "version": "0.1.0",
-  "homepage": "https://github.com/MonkeyMonk2023/MonkeyMonk",
+  "homepage": "https://github.com/MonkeyMonk2023/Monxverse",
   "private": false,
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
