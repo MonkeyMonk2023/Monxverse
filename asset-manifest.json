@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/MonkeyMonk2023/Monxverse/static/css/main.400b61b1.css",
+    "main.js": "/MonkeyMonk2023/Monxverse/static/js/main.828abae1.js",
+    "static/media/registration_bg.jpg": "/MonkeyMonk2023/Monxverse/static/media/registration_bg.2bd1b2bd20e27bb445b8.jpg",
+    "static/media/login_bg.jpg": "/MonkeyMonk2023/Monxverse/static/media/login_bg.d83391359f8bdb74ca13.jpg",
+    "static/media/travel.jpg": "/MonkeyMonk2023/Monxverse/static/media/travel.35303a49184552e9e071.jpg",
+    "static/media/map.png": "/MonkeyMonk2023/Monxverse/static/media/map.21251bd8d9b64b834d6f.png",
+    "static/media/logo.png": "/MonkeyMonk2023/Monxverse/static/media/logo.f985d28ad68e76d4bc25.png",
+    "static/media/logo_light.png": "/MonkeyMonk2023/Monxverse/static/media/logo_light.db3c82cdef5cee237983.png",
+    "index.html": "/MonkeyMonk2023/Monxverse/index.html",
+    "main.400b61b1.css.map": "/MonkeyMonk2023/Monxverse/static/css/main.400b61b1.css.map",
+    "main.828abae1.js.map": "/MonkeyMonk2023/Monxverse/static/js/main.828abae1.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.400b61b1.css",
+    "static/js/main.828abae1.js"
+  ]
+}
