@@ -82,7 +82,9 @@ const Sidebar = () => {
             src={logo}
             alt=""
             className={`rounded-full bg-black ${
-              open ? "w-[32px] h-[32px] lg:w-[42px] lg:h-[42px] p-1" : "w-[32px] h-[32px]"
+              open
+                ? "w-[32px] h-[32px] lg:w-[42px] lg:h-[42px] p-1"
+                : "w-[32px] h-[32px]"
             }`}
           />
           {open && (
@@ -112,10 +114,10 @@ const Sidebar = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink to={"/zenora"} className="link">
+              <a href="https://www.monkeymonk.ai/#/zenora" className="link" target="_blank">
                 <HiOutlineGlobe size={23} className="min-w-max" />
                 Plan a Trip
-              </NavLink>
+              </a>
             </li>
             <div className="h-[1px] bg-slate-300 w-full my-2"></div>
             <li onClick={() => setShowDialog(true)}>
@@ -128,7 +130,9 @@ const Sidebar = () => {
         </div>
         <motion.div
           onClick={() => setOpen(!open)}
-          animate={open ? { x: 0, y: 0, rotate: 0 } : { x: 0, y: 0, rotate: 180 }}
+          animate={
+            open ? { x: 0, y: 0, rotate: 0 } : { x: 0, y: 0, rotate: 180 }
+          }
           transition={{ duration: 0 }}
           className="absolute bg-slate-400 rounded-full p-2 w-fit h-fit z-50 right-2 bottom-3 cursor-pointer hidden md:block"
         >
@@ -138,7 +142,9 @@ const Sidebar = () => {
       <div className="m-3 md:hidden" onClick={() => setOpen(true)}>
         <MdMenu size={25} />
       </div>
-      {showDialog && <Dialog onCancel={handleCancelDialog} onConfirm={handleConfirmDialog} />}
+      {showDialog && (
+        <Dialog onCancel={handleCancelDialog} onConfirm={handleConfirmDialog} />
+      )}
     </div>
   );
 };

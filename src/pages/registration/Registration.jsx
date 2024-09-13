@@ -6,10 +6,11 @@ import {
   GoogleAuthProvider,
   sendEmailVerification,
   signInWithPopup,
+  signOut,
   updateProfile,
 } from "firebase/auth";
 import { auth, db } from "../../firebase/Firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection, where, query } from "firebase/firestore";
 
 import { FcGoogle } from "react-icons/fc";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
@@ -83,7 +84,7 @@ const Registration = () => {
       );
       const user = userCredential.user;
       await sendEmailVerification(user);
-      showToastMessage("Registration successful. Please check your email for verification.");
+      showToastMessage("Registration successful. Please check your email for verification.", "success");
       return user;
     } catch (error) {
       console.error("Error signing up user:", error.message);
@@ -190,22 +191,40 @@ const Registration = () => {
       };
 
       const userDocRef = doc(db, "users", user.uid);
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("email", "==", user.email));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        await signOut(auth);
+        navigate("/login")
+        setTimeout(() => {
+          showToastMessage("User already exists please login.", "error");
+        }, 100);
+        return;
+      }
       await setDoc(userDocRef, userData);
 
       await setDoc(doc(db, "userChats", user.uid), {});
-      showToastMessage("Registration with Google successfully!");
+      showToastMessage("Registration with Google successfully!", "success");
       navigate("/completeProfile");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setSignupError("Email address is already in use.");
-      showToastMessage("Error signing up with Google");
+      showToastMessage("Error signing up with Google", "error");
     }
   };
   }
-  const showToastMessage = (toastMessage) => {
-    toast.success(toastMessage, {
-      position: "bottom-right",
-    });
+  const showToastMessage = (toastMessage, toastType) => {
+    if(toastType == "success"){
+      toast.success(toastMessage, {
+        position: "bottom-right",
+      });
+    }
+    if(toastType == "error"){
+      toast.error(toastMessage, {
+        position: "bottom-right",
+      });
+    }
   };
 
   const textRef = useRef("");
@@ -253,7 +272,7 @@ const Registration = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 flex justify-center items-center">
       <div className=" max-w-screen-xl m-0 sm:m-20 shadow-none lg:shadow-xl sm:rounded-lg flex justify-center flex-1 flex-row-reverse">
-        <div className="lg:w-1/2 xl:w-7/12 p-6 sm:p-12">
+        <div className="w-full lg:w-1/2 xl:w-7/12 p-6 sm:p-12">
           <div className="text-center w-full flex justify-center items-center">
             <div className="w-16 h-16 bg-slate-800 rounded-full mx-4 p-2">
               <img src={logo} alt="logo" className="" />

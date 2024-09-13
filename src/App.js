@@ -10,8 +10,6 @@ import Profile from "./pages/profile/Profile";
 import Chat from "./pages/chat/Chat";
 import CompleteProfile from "./pages/completeProfile/CompleteProfile";
 
-import Footer from './components/footer/Footer';
-import Navbar from './components/navbar/Navbar';
 import TermsAndConditions from './containers/Terms/TermsAndConditions';
 import PrivacyPolicy from './containers/Terms/PrivacyPolicy';
 import EmailVerification from "./pages/EmailVerification/EmailVerification";

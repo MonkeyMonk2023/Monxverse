@@ -47,7 +47,7 @@ const Search = () => {
 
 
   const handleSearch = async (e) => {
-    const searchString = e.target.value.trim();
+    const searchString = e.target.value.trim().toLowerCase();;
 
     if (searchString === "") {
       setSuggestedUsers([]);
