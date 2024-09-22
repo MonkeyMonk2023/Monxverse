@@ -231,6 +231,7 @@ const Dashboard = () => {
           <div className="w-full flex flex-col justify-center items-center">
             {modifiedTripsData
               .filter((trip) => new Date(trip.date) > new Date())
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
               .map((trip) => (
                 <div key={trip.id} className="w-full max-w-[900px]">
                   <PostTripCard trip={trip} />
